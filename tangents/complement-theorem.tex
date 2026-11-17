@@ -1,0 +1,128 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\dc}[1]{\overline{#1}}          % digit complement
+\newcommand{\rc}[1]{#1^{\ast}}              % radix complement
+
+\title{The Complement Theorem in Base $N$}
+\author{Ryan Pennell}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Setup}
+
+Fix a base $N \ge 2$ and a working length of $k$ digits. Every integer $y$ with
+$0 \le y < N^k$ can be written with exactly $k$ digits, padding with leading zeros:
+\[
+  y = \sum_{i=0}^{k-1} d_i N^i, \qquad 0 \le d_i \le N-1.
+\]
+
+\begin{definition}
+The \emph{digit complement} (or $(N-1)$'s complement) of $y$ is
+\[
+  \dc{y} = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i,
+\]
+obtained by replacing each digit $d_i$ with $N-1-d_i$.
+The \emph{radix complement} (or $N$'s complement) of $y$ is $\rc{y} = \dc{y} + 1$.
+\end{definition}
+
+In base $2$ these are the one's and two's complements; in base $10$ they are the
+nines' and tens' complements.
+
+\begin{lemma}\label{lem:dc}
+For $0 \le y < N^k$, we have $\dc{y} = N^k - 1 - y$, and hence $\rc{y} = N^k - y$.
+\end{lemma}
+
+\begin{proof}
+The $k$-digit number whose digits are all $N-1$ is
+\[
+  \sum_{i=0}^{k-1} (N-1)N^i = (N-1)\cdot\frac{N^k - 1}{N-1} = N^k - 1.
+\]
+Since each $d_i \le N-1$, subtracting $y$ from $N^k - 1$ digit by digit never
+requires a borrow, so
+\[
+  (N^k - 1) - y = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i = \dc{y}.
+\]
+Adding $1$ gives $\rc{y} = N^k - y$.
+\end{proof}
+
+\begin{theorem}[Complement Theorem]\label{thm:main}
+Let $N \ge 2$ and $k \ge 1$. If $0 \le y \le x < N^k$, then
+\[
+  x + \rc{y} = N^k + (x - y).
+\]
+Consequently, the base-$N$ representation of $x + \rc{y}$ is a $1$ in the $N^k$
+place followed by the $k$ digits of $x - y$, so dropping the leading $1$ leaves
+exactly $x - y$.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:dc}, $x + \rc{y} = x + (N^k - y) = N^k + (x - y)$.
+Since $0 \le x - y < N^k$, the number $N^k + (x-y)$ written in base $N$ is a $1$
+followed by the $k$-digit representation of $x - y$.
+\end{proof}
+
+\begin{remark}[The case $x < y$]
+If $0 \le x < y < N^k$, then
+\[
+  x + \rc{y} = N^k - (y - x) = \rc{(y-x)} < N^k,
+\]
+so no carry leaves the $k$-th place, and the result is the radix complement of
+$y - x$. Thus a carry out signals a nonnegative difference, while no carry signals
+a negative difference stored in complement form. This is how computers read the
+sign of a two's-complement result.
+\end{remark}
+
+\begin{remark}[Modular view]
+Lemma~\ref{lem:dc} says $\rc{y} \equiv -y \pmod{N^k}$. That is, the radix complement
+is the additive inverse of $y$ in $\mathbb{Z}/N^k\mathbb{Z}$, and ``dropping the
+leading $1$'' is reduction modulo $N^k$.
+\end{remark}
+
+\section*{Examples}
+
+\begin{example}[Base $10$]
+Compute $523 - 187$. The digit complement of $187$ is $812$, so $\rc{187} = 813$.
+Then $523 + 813 = 1336$, and dropping the leading $1$ gives $336$.
+\end{example}
+
+\begin{example}[Base $5$]
+Compute $431_5 - 124_5$, that is, $116 - 39$. The digit complement of $124_5$ is
+$320_5$, so $\rc{124_5} = 321_5$. Then $431_5 + 321_5 = 1302_5$, and dropping the
+leading $1$ gives $302_5 = 77$.
+\end{example}
+
+\begin{example}[Base $2$]
+Compute $1101_2 - 0110_2$, that is, $13 - 6$. Flipping gives $1001_2$, so
+$\rc{0110_2} = 1010_2$. Then $1101_2 + 1010_2 = 10111_2$, and dropping the leading
+$1$ gives $0111_2 = 7$.
+\end{example}
+
+\section*{Generalization to Mixed Radix}
+
+Nothing requires every place to share the same base. Suppose place $i$ has base
+$N_i \ge 2$, so the place values are $1, N_0, N_0N_1, \dots$ and the largest
+$k$-place number is $M - 1$, where $M = N_0 N_1 \cdots N_{k-1}$. Replacing each
+digit $d_i$ with $N_i - 1 - d_i$ again requires no borrowing and yields $M - 1 - y$,
+and the same argument gives
+\[
+  x + (M - y) = M + (x - y).
+\]
+This covers hours and minutes (base $60$), feet and inches (base $12$), and pounds
+and ounces (base $16$). In every case the theorem is an instance of the identity
+\[
+  a - b = a + (M - b) - M.
+\]
+
+\end{document}

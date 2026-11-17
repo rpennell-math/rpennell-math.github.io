@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Complement Theorem in Base N · Tangents</title>
+<meta name="description" content="Why subtracting by adding the radix complement works in any base, with examples in base 10, 5, and 2, and a generalization to mixed radix.">
+<script>
+MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], macros: { dc: ['\\overline{#1}',1], rc: ['{#1}^{\\ast}',1] } } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  :root { --ink:#1d2433; --muted:#5b6475; --line:#e3e6ec; --bg:#fafbfc; --accent:#006648; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: Georgia, "Times New Roman", serif; color:var(--ink); background:var(--bg); line-height:1.6; }
+  header { background:#006648; color:#fff; padding:2.6rem 1.25rem 2.2rem; }
+  .wrap { max-width:760px; margin:0 auto; }
+  .kicker { font-family:system-ui,sans-serif; letter-spacing:.08em; text-transform:uppercase; font-size:.85rem; opacity:.85; margin:0; }
+  .kicker a { color:#fff; text-decoration:none; }
+  header h1 { font-size:2.2rem; margin:.3rem 0 .5rem; font-weight:normal; }
+  header p { margin:.2rem 0; opacity:.9; }
+  .btns { margin-top:1.3rem; display:flex; gap:.75rem; flex-wrap:wrap; }
+  .btn { font-family:system-ui,sans-serif; display:inline-block; padding:.6rem 1.05rem; border-radius:6px; text-decoration:none; font-weight:600; font-size:.95rem; }
+  .btn.primary { background:#fff; color:#006648; }
+  .btn.ghost { border:1px solid rgba(255,255,255,.6); color:#fff; }
+  main { padding:2rem 1.25rem 3rem; font-size:1.07rem; }
+  h2 { font-weight:normal; font-size:1.5rem; margin:2.2rem 0 .6rem; border-bottom:1px solid var(--line); padding-bottom:.3rem; }
+  .env { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px; padding:.9rem 1.2rem; margin:1.2rem 0; }
+  .env.plain { border-left-color:#c3c8d1; }
+  .label { font-family:system-ui,sans-serif; font-weight:700; font-size:.95rem; color:var(--accent); }
+  .env.plain .label { color:var(--muted); }
+  .proof { margin:.6rem 0 1.4rem 0; }
+  .proof .label { color:var(--ink); font-style:italic; font-family:inherit; font-weight:normal; }
+  .qed { float:right; }
+  a { color:var(--accent); }
+  footer { text-align:center; color:var(--muted); font-size:.85rem; padding:0 1rem 2.5rem; font-family:system-ui,sans-serif; }
+  mjx-container[display="true"] { overflow-x:auto; overflow-y:hidden; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="kicker"><a href="https://rpennell-math.github.io/">&larr; Home</a> · <a href="./">Tangents</a></p>
+    <h1>The Complement Theorem in Base $N$</h1>
+    <p>Ryan Pennell</p>
+    <div class="btns">
+      <a class="btn primary" href="complement-theorem.pdf">PDF version</a>
+      <a class="btn ghost" href="complement-theorem.tex" download>LaTeX source</a>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+
+<h2>Setup</h2>
+<p>Fix a base $N \ge 2$ and a working length of $k$ digits. Every integer $y$ with $0 \le y &lt; N^k$ can be written with exactly $k$ digits, padding with leading zeros:
+\[ y = \sum_{i=0}^{k-1} d_i N^i, \qquad 0 \le d_i \le N-1. \]</p>
+
+<div class="env plain"><span class="label">Definition 1.</span>
+The <em>digit complement</em> (or $(N-1)$'s complement) of $y$ is
+\[ \dc{y} = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i, \]
+obtained by replacing each digit $d_i$ with $N-1-d_i$. The <em>radix complement</em> (or $N$'s complement) of $y$ is $\rc{y} = \dc{y} + 1$.
+</div>
+
+<p>In base $2$ these are the one's and two's complements; in base $10$ they are the nines' and tens' complements.</p>
+
+<div class="env"><span class="label">Lemma 2.</span>
+<em>For $0 \le y &lt; N^k$, we have $\dc{y} = N^k - 1 - y$, and hence $\rc{y} = N^k - y$.</em>
+</div>
+<div class="proof"><span class="label">Proof.</span>
+The $k$-digit number whose digits are all $N-1$ is
+\[ \sum_{i=0}^{k-1} (N-1)N^i = (N-1)\cdot\frac{N^k - 1}{N-1} = N^k - 1. \]
+Since each $d_i \le N-1$, subtracting $y$ from $N^k - 1$ digit by digit never requires a borrow, so
+\[ (N^k - 1) - y = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i = \dc{y}. \]
+Adding $1$ gives $\rc{y} = N^k - y$. <span class="qed">$\square$</span>
+</div>
+
+<div class="env"><span class="label">Theorem 3 (Complement Theorem).</span>
+<em>Let $N \ge 2$ and $k \ge 1$. If $0 \le y \le x &lt; N^k$, then
+\[ x + \rc{y} = N^k + (x - y). \]
+Consequently, the base-$N$ representation of $x + \rc{y}$ is a $1$ in the $N^k$ place followed by the $k$ digits of $x - y$, so dropping the leading $1$ leaves exactly $x - y$.</em>
+</div>
+<div class="proof"><span class="label">Proof.</span>
+By Lemma 2, $x + \rc{y} = x + (N^k - y) = N^k + (x - y)$. Since $0 \le x - y &lt; N^k$, the number $N^k + (x-y)$ written in base $N$ is a $1$ followed by the $k$-digit representation of $x - y$. <span class="qed">$\square$</span>
+</div>
+
+<p><em>Remark (the case $x &lt; y$).</em> If $0 \le x &lt; y &lt; N^k$, then
+\[ x + \rc{y} = N^k - (y - x) = \rc{(y-x)} &lt; N^k, \]
+so no carry leaves the $k$-th place, and the result is the radix complement of $y - x$. Thus a carry out signals a nonnegative difference, while no carry signals a negative difference stored in complement form. This is how computers read the sign of a two's-complement result.</p>
+
+<p><em>Remark (modular view).</em> Lemma 2 says $\rc{y} \equiv -y \pmod{N^k}$. That is, the radix complement is the additive inverse of $y$ in $\mathbb{Z}/N^k\mathbb{Z}$, and &ldquo;dropping the leading $1$&rdquo; is reduction modulo $N^k$.</p>
+
+<h2>Examples</h2>
+
+<div class="env plain"><span class="label">Example 4 (Base $10$).</span>
+Compute $523 - 187$. The digit complement of $187$ is $812$, so $\rc{187} = 813$. Then $523 + 813 = 1336$, and dropping the leading $1$ gives $336$.
+</div>
+
+<div class="env plain"><span class="label">Example 5 (Base $5$).</span>
+Compute $431_5 - 124_5$, that is, $116 - 39$. The digit complement of $124_5$ is $320_5$, so $\rc{124_5} = 321_5$. Then $431_5 + 321_5 = 1302_5$, and dropping the leading $1$ gives $302_5 = 77$.
+</div>
+
+<div class="env plain"><span class="label">Example 6 (Base $2$).</span>
+Compute $1101_2 - 0110_2$, that is, $13 - 6$. Flipping gives $1001_2$, so $\rc{0110_2} = 1010_2$. Then $1101_2 + 1010_2 = 10111_2$, and dropping the leading $1$ gives $0111_2 = 7$.
+</div>
+
+<h2>Generalization to Mixed Radix</h2>
+<p>Nothing requires every place to share the same base. Suppose place $i$ has base $N_i \ge 2$, so the place values are $1, N_0, N_0N_1, \dots$ and the largest $k$-place number is $M - 1$, where $M = N_0 N_1 \cdots N_{k-1}$. Replacing each digit $d_i$ with $N_i - 1 - d_i$ again requires no borrowing and yields $M - 1 - y$, and the same argument gives
+\[ x + (M - y) = M + (x - y). \]
+This covers hours and minutes (base $60$), feet and inches (base $12$), and pounds and ounces (base $16$). In every case the theorem is an instance of the identity
+\[ a - b = a + (M - b) - M. \]</p>
+
+</main>
+<footer><a href="./">More from Tangents</a> · Ryan Pennell, Ivy Tech Bloomington</footer>
+</body>
+</html>
