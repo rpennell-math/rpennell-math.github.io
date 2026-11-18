@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ε–δ Definition of a Limit · Tangents</title>
+<meta name="description" content="An interactive picture of the epsilon-delta definition of a limit: pick ε, find δ, and see where the graph escapes the band.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf8f4; --panel:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#e4e0d8;
+    --eps:#2f6fdb; --eps-fill:rgba(47,111,219,.12);
+    --del:#c9831a; --del-fill:rgba(201,131,26,.13);
+    --good:#1a8a4a; --bad:#d23a2e; --curve-out:#9aa3ad;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+  header{max-width:1180px;margin:0 auto;padding:28px 20px 8px}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:2rem;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0}
+  .crumbs{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+  .crumbs a{color:#006648;text-decoration:none;font-weight:600}
+  .defn{font-family:"Source Serif 4",Georgia,serif;font-size:1.15rem;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--eps);border-radius:8px;padding:14px 18px;margin:18px 0 0}
+  .defn i{font-style:italic}
+  .e{color:var(--eps);font-weight:600} .d{color:var(--del);font-weight:600}
+  main{max-width:1180px;margin:0 auto;padding:16px 20px 40px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+  #plotwrap{position:relative;width:100%;aspect-ratio:4/3;min-height:320px}
+  canvas{width:100%;height:100%;display:block;border-radius:6px;touch-action:none}
+  label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin:14px 0 4px}
+  select,input[type=text],input[type=number]{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:#fff}
+  input[type=range]{width:100%}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  .val{font-variant-numeric:tabular-nums;font-weight:600}
+  button{font:inherit;font-size:.9rem;padding:8px 12px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer}
+  button:hover{background:#f3f1ec}
+  button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  button.primary:hover{background:#3a4048}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  #status{margin-top:14px;padding:12px 14px;border-radius:8px;font-family:"Source Serif 4",Georgia,serif;font-size:1.05rem}
+  #status.ok{background:rgba(26,138,74,.09);border:1px solid rgba(26,138,74,.35)}
+  #status.no{background:rgba(210,58,46,.08);border:1px solid rgba(210,58,46,.35)}
+  .hint{font-size:.9rem;color:var(--muted);margin-top:10px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted);margin-top:10px}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+  .check{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.9rem}
+  .check input{width:auto}
+  #customBox{display:none}
+  section.explain{max-width:1180px;margin:0 auto;padding:0 20px 50px}
+  section.explain .card{font-family:"Source Serif 4",Georgia,serif;font-size:1.07rem}
+  section.explain h2{font-size:1.3rem;margin:0 0 8px}
+  section.explain ol{padding-left:22px}
+  section.explain li{margin:6px 0}
+  #proof{margin-top:6px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85em}
+</style>
+</head>
+<body>
+<header>
+  <p class="crumbs"><a href="https://rpennell-math.github.io/">&larr; Home</a> · <a href="./">Tangents</a></p>
+  <h1>The ε–δ Definition of a Limit</h1>
+  <p class="sub">Choose a tolerance <span class="e">ε</span> around the limit, then find a <span class="d">δ</span> that keeps the function inside it.</p>
+  <div class="defn">
+    We say <i>lim</i><sub><i>x</i>→<i>a</i></sub> <i>f</i>(<i>x</i>) = <i>L</i> if for every <span class="e">ε</span> &gt; 0 there exists a <span class="d">δ</span> &gt; 0 such that
+    &nbsp;0 &lt; |<i>x</i> − <i>a</i>| &lt; <span class="d">δ</span> &nbsp;⟹&nbsp; |<i>f</i>(<i>x</i>) − <i>L</i>| &lt; <span class="e">ε</span>.
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div id="plotwrap"><canvas id="cv"></canvas></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--eps-fill);border:1px solid var(--eps)"></span>ε-band: L − ε &lt; y &lt; L + ε</span>
+      <span><span class="sw" style="background:var(--del-fill);border:1px solid var(--del)"></span>δ-band: a − δ &lt; x &lt; a + δ</span>
+      <span><span class="sw" style="background:var(--good)"></span>inside both</span>
+      <span><span class="sw" style="background:var(--bad)"></span>escapes the ε-band</span>
+    </div>
+    <p class="hint">Tip: drag left/right on the graph to change δ, up/down to change ε.</p>
+  </div>
+
+  <div class="card">
+    <label for="fn">Function</label>
+    <select id="fn"></select>
+
+    <div id="customBox">
+      <label for="cf">f(x) = <span style="font-weight:400">(JavaScript syntax, e.g. <span class="mono">x*x + 1</span>, <span class="mono">Math.sin(x)/x</span>)</span></label>
+      <input type="text" id="cf" value="(x*x - 1)/(x - 1)">
+      <div class="row">
+        <div><label for="ca">a</label><input type="number" id="ca" value="1" step="any"></div>
+        <div><label for="cL">L</label><input type="number" id="cL" value="2" step="any"></div>
+      </div>
+    </div>
+
+    <div id="claimBox">
+      <label for="Lin">Claimed limit L <span style="font-weight:400">(try changing it!)</span></label>
+      <input type="number" id="Lin" step="any">
+    </div>
+
+    <label>ε = <span class="val e" id="epsv"></span></label>
+    <input type="range" id="eps" min="-3" max="0.3" step="0.005">
+
+    <label>δ = <span class="val d" id="delv"></span></label>
+    <input type="range" id="del" min="-4" max="0.4" step="0.005">
+
+    <div class="btns">
+      <button class="primary" id="auto">Find a δ for this ε</button>
+      <button id="book">Use the proof's δ</button>
+      <button id="shrink">Halve ε</button>
+    </div>
+    <div class="check"><input type="checkbox" id="zoom"><label for="zoom" style="margin:0;font-weight:500;color:var(--ink)">Zoom in to the bands</label></div>
+
+    <div id="status"></div>
+  </div>
+</main>
+
+<section class="explain">
+  <div class="card">
+    <h2>About this function</h2>
+    <div id="proof"></div>
+    <h2 style="margin-top:18px">How to read the picture</h2>
+    <ol>
+      <li>Your opponent picks <span class="e">ε</span>: “I want <i>f</i>(<i>x</i>) within <span class="e">ε</span> of <i>L</i>.” That is the horizontal blue band.</li>
+      <li>You answer with <span class="d">δ</span>: “Then stay within <span class="d">δ</span> of <i>a</i>.” That is the vertical orange band.</li>
+      <li>You win this round if every point of the graph in the orange band (except possibly at <i>x</i> = <i>a</i> itself) is also in the blue band — the curve there is entirely <span style="color:var(--good);font-weight:600">green</span>.</li>
+      <li>The limit is <i>L</i> exactly when you can win <em>every</em> round, no matter how small <span class="e">ε</span> gets. Usually smaller <span class="e">ε</span> forces smaller <span class="d">δ</span>.</li>
+      <li>The value <i>f</i>(<i>a</i>) is ignored (that is the “0 &lt;” in 0 &lt; |<i>x</i> − <i>a</i>|), so holes and misplaced points don’t matter.</li>
+    </ol>
+  </div>
+</section>
+
+<script>
+const FUNCS = [
+  { name:"f(x) = x²,  x → 1", f:x=>x*x, a:1, L:1, view:[-0.5,2.5,-0.5,3.5],
+    book:e=>Math.min(1,e/3),
+    proof:"Since |x² − 1| = |x − 1|·|x + 1|, and if |x − 1| < 1 then |x + 1| < 3, we get |x² − 1| < 3|x − 1|. So δ = min(1, ε/3) works." },
+  { name:"f(x) = (x² − 4)/(x − 2),  x → 2", f:x=>(x*x-4)/(x-2), a:2, L:4, view:[-0.5,4.5,-0.5,7], hole:true,
+    book:e=>e,
+    proof:"For x ≠ 2, f(x) = x + 2, so |f(x) − 4| = |x − 2|. Choosing δ = ε works. Notice f(2) is undefined — the definition never looks at x = a." },
+  { name:"f(x) = sin(x)/x,  x → 0", f:x=>Math.sin(x)/x, a:0, L:1, view:[-10,10,-0.5,1.4], hole:true,
+    book:e=>Math.sqrt(6*e),
+    proof:"From the Taylor series, |sin(x)/x − 1| ≤ x²/6 for x ≠ 0. So δ = √(6ε) works." },
+  { name:"f(x) = x·sin(1/x),  x → 0", f:x=>x*Math.sin(1/x), a:0, L:0, view:[-0.6,0.6,-0.6,0.6], hole:true,
+    book:e=>e,
+    proof:"Since |sin(1/x)| ≤ 1, |x·sin(1/x)| ≤ |x|. So δ = ε works, even though the function oscillates infinitely often near 0." },
+  { name:"Step function (jump at 0) — limit fails", f:x=>x>=0?1:0, a:0, L:1, view:[-2,2,-0.6,1.6], jump:true, fa:1,
+    book:null,
+    proof:"No L works. Whatever L you claim, the left side sits at 0 and the right side at 1, so any ε ≤ 1/2 catches one side outside the band for every δ. (For ε > 1 with L = 1, any δ works — that’s why the definition says <em>every</em> ε.)" },
+  { name:"f(x) = sin(1/x),  x → 0 — limit fails", f:x=>Math.sin(1/x), a:0, L:0, view:[-0.5,0.5,-1.4,1.4], hole:true,
+    book:null,
+    proof:"No L works. Every interval around 0 contains points where sin(1/x) = 1 and points where it equals −1, so for ε < 1 no δ keeps the graph inside the band." },
+  { name:"Custom function…", custom:true }
+];
+
+const $ = id=>document.getElementById(id);
+const cv=$("cv"), ctx=cv.getContext("2d");
+let cur, fn, a, L, eps=0.5, del=0.3;
+
+FUNCS.forEach((F,i)=>{const o=document.createElement("option");o.value=i;o.textContent=F.name;$("fn").appendChild(o);});
+
+function setFromFunc(i){
+  cur=FUNCS[i];
+  $("customBox").style.display=cur.custom?"block":"none";
+  $("claimBox").style.display=cur.custom?"none":"block";
+  if(cur.custom){ readCustom(); }
+  else { fn=cur.f; a=cur.a; L=cur.L; $("Lin").value=L; }
+  eps = cur.custom?0.5:(cur.view[3]-cur.view[2])/6;
+  setEps(eps);
+  del = autoDelta() || 0.1;
+  setDel(del);
+  $("book").disabled = !cur.book;
+  $("proof").innerHTML = cur.custom ? "Type any function, a point <i>a</i>, and a claimed limit <i>L</i>. Then try to win for smaller and smaller ε." : cur.proof;
+  draw();
+}
+
+function readCustom(){
+  try{ const g=new Function("x","with(Math){return ("+$("cf").value+");}"); g(0.123); fn=g; }
+  catch(e){ fn=x=>NaN; }
+  a=parseFloat($("ca").value)||0; L=parseFloat($("cL").value)||0;
+}
+function customView(){
+  // pick a window around (a, L)
+  return [a-3,a+3,L-3,L+3];
+}
+
+const fmt = v => (Math.abs(v)>=0.01 || v===0) ? v.toFixed(3).replace(/\.?0+$/,"") || "0" : v.toExponential(2);
+function setEps(v){ eps=Math.max(1e-6,v); $("eps").value=Math.log10(eps); $("epsv").textContent=fmt(eps); }
+function setDel(v){ del=Math.max(1e-7,v); $("del").value=Math.log10(del); $("delv").textContent=fmt(del); }
+
+// Largest deviation |f(x)-L| over 0<|x-a|<d, sampled densely (uniform + geometric near a)
+function maxDev(d){
+  let m=0, worst=null;
+  const test=x=>{const y=fn(x); if(!isFinite(y))return; const dv=Math.abs(y-L); if(dv>m){m=dv;worst=x;}};
+  const N=1500;
+  for(let k=1;k<N;k++){ const t=d*k/N; test(a+t); test(a-t); }
+  for(let k=0;k<600;k++){ const t=d*Math.pow(0.97,k); if(t<=0)break; test(a+t*0.999); test(a-t*0.999); }
+  return {m,worst};
+}
+
+function autoDelta(){
+  const v=view(true); const dmax=Math.max(v[1]-a,a-v[0]);
+  if(maxDev(dmax).m<eps) return dmax*0.98;
+  let lo=0, hi=dmax;
+  for(let i=0;i<50;i++){ const mid=(lo+hi)/2; if(maxDev(mid).m<eps) lo=mid; else hi=mid; }
+  return lo>1e-7 ? lo*0.98 : 0;
+}
+
+function view(base){
+  const v = cur.custom ? customView() : cur.view.slice();
+  if(base || !$("zoom").checked) return v;
+  const hx=Math.max(del*2.2,1e-6), hy=Math.max(eps*2.5,1e-6);
+  return [a-hx,a+hx,L-hy,L+hy];
+}
+
+function niceStep(range){
+  const raw=range/8, p=Math.pow(10,Math.floor(Math.log10(raw))), n=raw/p;
+  return (n<1.5?1:n<3.5?2:n<7.5?5:10)*p;
+}
+
+function draw(){
+  const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.clientHeight;
+  cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  const [x0,x1,y0,y1]=view();
+  const X=x=>(x-x0)/(x1-x0)*W, Y=y=>H-(y-y0)/(y1-y0)*H;
+  ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
+
+  // grid + axes
+  ctx.font="11px Inter, sans-serif"; ctx.fillStyle="#8a9098";
+  const sx=niceStep(x1-x0), sy=niceStep(y1-y0);
+  ctx.strokeStyle="#f0ede7"; ctx.lineWidth=1;
+  for(let gx=Math.ceil(x0/sx)*sx; gx<=x1; gx+=sx){ctx.beginPath();ctx.moveTo(X(gx),0);ctx.lineTo(X(gx),H);ctx.stroke();}
+  for(let gy=Math.ceil(y0/sy)*sy; gy<=y1; gy+=sy){ctx.beginPath();ctx.moveTo(0,Y(gy));ctx.lineTo(W,Y(gy));ctx.stroke();}
+  ctx.strokeStyle="#b9bec5"; ctx.lineWidth=1.2;
+  const ax=Math.min(Math.max(Y(0),0),H), ay=Math.min(Math.max(X(0),0),W);
+  ctx.beginPath();ctx.moveTo(0,ax);ctx.lineTo(W,ax);ctx.moveTo(ay,0);ctx.lineTo(ay,H);ctx.stroke();
+  for(let gx=Math.ceil(x0/sx)*sx; gx<=x1; gx+=sx){ if(Math.abs(gx)<sx/1e6)continue; ctx.fillText(+gx.toPrecision(6)+"",X(gx)+3,Math.min(ax+13,H-4)); }
+  for(let gy=Math.ceil(y0/sy)*sy; gy<=y1; gy+=sy){ if(Math.abs(gy)<sy/1e6)continue; ctx.fillText(+gy.toPrecision(6)+"",Math.min(ay+4,W-40),Y(gy)-3); }
+
+  // bands
+  ctx.fillStyle="rgba(47,111,219,.12)"; ctx.fillRect(0,Y(L+eps),W,Y(L-eps)-Y(L+eps));
+  ctx.fillStyle="rgba(201,131,26,.13)"; ctx.fillRect(X(a-del),0,X(a+del)-X(a-del),H);
+  ctx.setLineDash([6,5]); ctx.lineWidth=1.3;
+  ctx.strokeStyle="#2f6fdb"; [L+eps,L-eps].forEach(y=>{ctx.beginPath();ctx.moveTo(0,Y(y));ctx.lineTo(W,Y(y));ctx.stroke();});
+  ctx.strokeStyle="#c9831a"; [a+del,a-del].forEach(x=>{ctx.beginPath();ctx.moveTo(X(x),0);ctx.lineTo(X(x),H);ctx.stroke();});
+  ctx.setLineDash([2,4]); ctx.strokeStyle="#666";
+  ctx.beginPath();ctx.moveTo(0,Y(L));ctx.lineTo(W,Y(L));ctx.moveTo(X(a),0);ctx.lineTo(X(a),H);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // band labels
+  ctx.font="600 12px Inter, sans-serif";
+  ctx.fillStyle="#2f6fdb"; ctx.fillText("L + ε",6,Y(L+eps)-4); ctx.fillText("L − ε",6,Y(L-eps)+14);
+  ctx.fillStyle="#c9831a"; ctx.fillText("a − δ",X(a-del)-38,14); ctx.fillText("a + δ",X(a+del)+4,14);
+
+  // curve, colored per sample
+  const steps=W*4, jumpTol=(y1-y0)*0.5;
+  let prev=null;
+  ctx.lineWidth=2.6; ctx.lineCap="round";
+  for(let i=0;i<=steps;i++){
+    const x=x0+(x1-x0)*i/steps, y=fn(x);
+    if(!isFinite(y)){prev=null;continue;}
+    const pt={x,y};
+    if(prev && Math.abs(y-prev.y)<jumpTol && !(cur.jump && prev.x<a && x>=a)){
+      const mx=(x+prev.x)/2, my=(y+prev.y)/2;
+      const inD=Math.abs(mx-a)<del;
+      ctx.strokeStyle = !inD ? "#9aa3ad" : (Math.abs(my-L)<eps ? "#1a8a4a" : "#d23a2e");
+      ctx.beginPath();ctx.moveTo(X(prev.x),Y(prev.y));ctx.lineTo(X(x),Y(y));ctx.stroke();
+    }
+    prev=pt;
+  }
+
+  // point at x=a: open circle at (a,L); filled dot at f(a) if defined
+  const fa = cur.jump ? cur.fa : fn(a);
+  const holeY = cur.jump ? null : L;
+  if(holeY!==null){
+    ctx.fillStyle="#fff"; ctx.strokeStyle="#1f2328"; ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(X(a),Y(holeY),5,0,2*Math.PI);ctx.fill();ctx.stroke();
+  } else {
+    // jump: open circle at left limit, filled at f(a)
+    ctx.fillStyle="#fff"; ctx.strokeStyle="#1f2328"; ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(X(a),Y(0),5,0,2*Math.PI);ctx.fill();ctx.stroke();
+  }
+  if(isFinite(fa)){
+    ctx.fillStyle="#1f2328"; ctx.beginPath();ctx.arc(X(a),Y(fa),4.5,0,2*Math.PI);ctx.fill();
+  }
+
+  updateStatus();
+}
+
+function updateStatus(){
+  const {m,worst}=maxDev(del), ok=m<eps, s=$("status");
+  s.className = ok?"ok":"no";
+  if(ok){
+    s.innerHTML = `✔ For <span class="e">ε = ${fmt(eps)}</span>, <span class="d">δ = ${fmt(del)}</span> works:<br>whenever 0 &lt; |x − ${fmt(a)}| &lt; ${fmt(del)}, we have |f(x) − ${fmt(L)}| &lt; ${fmt(eps)}.<br><span style="font-size:.9rem;color:var(--muted)">(Largest gap in the δ-band ≈ ${fmt(m)}.) Now make ε smaller!</span>`;
+  } else {
+    s.innerHTML = `✘ <span class="d">δ = ${fmt(del)}</span> is too big for <span class="e">ε = ${fmt(eps)}</span>.<br>For example, at x ≈ ${fmt(worst)}, |f(x) − ${fmt(L)}| ≈ ${fmt(m)} ≥ ${fmt(eps)}.<br><span style="font-size:.9rem;color:var(--muted)">Shrink δ, or press “Find a δ”.</span>`;
+  }
+}
+
+// controls
+$("fn").onchange=e=>setFromFunc(+e.target.value);
+$("eps").oninput=e=>{setEps(Math.pow(10,+e.target.value));draw();};
+$("del").oninput=e=>{setDel(Math.pow(10,+e.target.value));draw();};
+$("Lin").oninput=e=>{const v=parseFloat(e.target.value); if(isFinite(v)){L=v;draw();}};
+["cf","ca","cL"].forEach(id=>$(id).oninput=()=>{readCustom();draw();});
+$("zoom").onchange=draw;
+$("shrink").onclick=()=>{setEps(eps/2);draw();};
+$("book").onclick=()=>{ if(cur.book){ setDel(cur.book(eps)*0.999); draw(); } };
+$("auto").onclick=()=>{
+  const d=autoDelta();
+  if(d>0){ setDel(d); draw(); }
+  else { draw(); $("status").className="no";
+    $("status").innerHTML=`✘ No δ works for <span class="e">ε = ${fmt(eps)}</span> with L = ${fmt(L)} — even tiny intervals around a contain points that escape the band. That means the limit is <b>not</b> ${fmt(L)}.`; }
+};
+
+// drag on graph: horizontal -> delta, vertical -> epsilon
+let drag=null;
+cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,d:del,e:eps};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener("pointermove",e=>{
+  if(!drag)return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  setDel(drag.d*Math.pow(10,dx/250)); setEps(drag.e*Math.pow(10,-dy/250)); draw();
+});
+cv.addEventListener("pointerup",()=>drag=null);
+window.addEventListener("resize",draw);
+
+setFromFunc(0);
+</script>
+</body>
+</html>
