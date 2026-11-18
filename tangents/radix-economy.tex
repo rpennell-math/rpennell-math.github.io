@@ -1,0 +1,344 @@
+\documentclass[11pt]{amsart}
+
+\usepackage[margin=1.15in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\numberwithin{equation}{section}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+
+\begin{document}
+
+\title[Radix Economy and the Number e]{Radix Economy and the Number $e$:\\ Why Base Three Is the Most Economical Integer Base}
+
+\author{Ryan Pennell}
+\address{Department of Mathematics, Ivy Tech Community College, Bloomington, Indiana}
+
+\subjclass[2020]{Primary 11A63; Secondary 26A06, 68R01}
+\keywords{radix economy, positional numeral systems, ternary, balanced ternary, $\beta$-expansions}
+
+\date{\today}
+
+\begin{abstract}
+If a digit capable of $b$ distinct states is assigned cost $b$, the cost of
+writing an integer $N$ in base $b$ is the \emph{radix economy}
+$E(b,N) = b\,(\lfloor \log_b N\rfloor + 1)$. We give a self-contained
+treatment of the classical fact that this cost is asymptotically
+$(b/\ln b)\ln N$, that the function $x/\ln x$ is uniquely minimized on
+$(1,\infty)$ at $x=e$, and that among integer bases the unique minimizer is
+$b=3$, a fact that reduces to the inequality $2^3<3^2$. We further show that
+no mixed-radix system built from integer radices can improve on pure ternary,
+and that base $e$ itself, while optimal in the continuous model, is unusable
+for exact integer arithmetic: by the transcendence of $e$, no integer
+$N\ge 3$ has a finite base-$e$ expansion.
+\end{abstract}
+
+\maketitle
+
+%======================================================================
+\section{Introduction}
+%======================================================================
+
+Why do computers count in base two, and is there a sense in which some other
+base would be better? A classical answer, going back at least to the early
+days of electronic computing and popularized in Knuth~\cite{knuth} and
+Hayes~\cite{hayes}, is the notion of \emph{radix economy}. One models the
+cost of a digit as proportional to the number of states it must distinguish,
+and asks which base minimizes the total cost of representing large numbers.
+The answer is the number $e\approx 2.718$, and the best integer base is
+therefore $3$. The idea was realized in hardware in the Soviet
+\textsc{Setun} computer (Moscow State University, 1958), which used balanced
+ternary arithmetic~\cite{hayes}.
+
+The purpose of this note is to give a complete and rigorous account of this
+folklore result, together with two complements that are less often stated
+precisely: an optimality result for mixed-radix systems
+(Section~\ref{sec:mixed}), and an obstruction to using base $e$ directly
+(Section~\ref{sec:basee}).
+
+%======================================================================
+\section{Setup and the asymptotic cost}
+%======================================================================
+
+\begin{definition}
+For an integer base $b\ge 2$ and an integer $N\ge 1$, let
+\[
+  d_b(N) = \lfloor \log_b N \rfloor + 1
+\]
+denote the number of base-$b$ digits of $N$. The \emph{radix economy} of $N$
+in base $b$ is
+\[
+  E(b,N) = b\, d_b(N).
+\]
+Define $f\colon(1,\infty)\to\R$ by
+\[
+  f(x) = \frac{x}{\ln x}.
+\]
+\end{definition}
+
+The following lemma shows that, for large $N$, comparing bases by radix
+economy is the same as comparing the values of $f$.
+
+\begin{lemma}\label{lem:asymp}
+For each fixed integer $b\ge 2$,
+\[
+  \lim_{N\to\infty} \frac{E(b,N)}{\ln N} = f(b).
+\]
+Equivalently, $E(b,N) = f(b)\ln N + O(1)$ as $N\to\infty$.
+\end{lemma}
+
+\begin{proof}
+For every real $y$ we have $y < \lfloor y\rfloor + 1 \le y+1$. Taking
+$y = \log_b N = \ln N/\ln b$ gives
+\[
+  \frac{\ln N}{\ln b} < d_b(N) \le \frac{\ln N}{\ln b} + 1 .
+\]
+Multiplying by $b$ yields
+\begin{equation}\label{eq:sandwich}
+  f(b)\ln N < E(b,N) \le f(b)\ln N + b,
+\end{equation}
+which is the second statement. Dividing by $\ln N$ for $N\ge 2$ gives
+\[
+  f(b) < \frac{E(b,N)}{\ln N} \le f(b) + \frac{b}{\ln N},
+\]
+and since $b/\ln N\to 0$, the squeeze theorem gives the limit.
+\end{proof}
+
+%======================================================================
+\section{The continuous optimum}
+%======================================================================
+
+\begin{theorem}\label{thm:e}
+The function $f(x)=x/\ln x$ attains a unique global minimum on $(1,\infty)$
+at $x=e$, and $f(e)=e$.
+\end{theorem}
+
+\begin{proof}
+The function $f$ is differentiable on $(1,\infty)$, with
+\[
+  f'(x) = \frac{\ln x \cdot 1 - x\cdot \tfrac{1}{x}}{(\ln x)^2}
+        = \frac{\ln x - 1}{(\ln x)^2}.
+\]
+For $x>1$ the denominator is positive, so $f'(x)$ has the sign of
+$\ln x - 1$. Thus $f'(x)<0$ for $1<x<e$ and $f'(x)>0$ for $x>e$. By the Mean
+Value Theorem, $f$ is strictly decreasing on $(1,e]$ and strictly increasing
+on $[e,\infty)$. Consequently $f(x)>f(e)$ for every $x\neq e$, and
+$f(e)=e/\ln e = e$.
+\end{proof}
+
+\begin{remark}
+There is an information-theoretic reading of Theorem~\ref{thm:e}. A digit
+with $b$ states carries $\ln b$ nats of information, so $f(b)=b/\ln b$ is the
+cost per nat. The number $e$ is the state count that delivers the most
+information per unit cost. The natural logarithm appears because the nat is
+the natural unit of information; changing the base of the logarithm rescales
+$f$ by a positive constant and does not move the minimizer.
+\end{remark}
+
+%======================================================================
+\section{Integer bases}
+%======================================================================
+
+\begin{corollary}\label{cor:three}
+Among integers $b\ge 2$, the value $f(b)$ is uniquely minimized at $b=3$.
+\end{corollary}
+
+\begin{proof}
+Since $2<e<3$, Theorem~\ref{thm:e} shows that $f$ is strictly increasing on
+$[3,\infty)$, so $f(3)<f(4)<f(5)<\cdots$. It remains to compare $b=2$ with
+$b=3$:
+\[
+  f(3)<f(2)
+  \iff \frac{3}{\ln 3} < \frac{2}{\ln 2}
+  \iff 3\ln 2 < 2\ln 3
+  \iff \ln 8 < \ln 9,
+\]
+which holds because $8<9$.
+\end{proof}
+
+\begin{corollary}\label{cor:eventual}
+For each fixed integer $b\ge 2$ with $b\neq 3$, there is an $N_0$ such that
+\[
+  E(3,N) < E(b,N) \qquad\text{for all } N\ge N_0 .
+\]
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:asymp},
+\[
+  \lim_{N\to\infty}\frac{E(b,N)-E(3,N)}{\ln N} = f(b)-f(3) > 0,
+\]
+the inequality being Corollary~\ref{cor:three}. Hence the quotient is
+eventually positive, and since $\ln N>0$ for $N\ge 2$, so is the numerator.
+\end{proof}
+
+\begin{remark}
+Corollary~\ref{cor:eventual} is pointwise in $b$: it does not assert that base
+$3$ is optimal for every individual $N$. Because of the floor function, small
+values of $N$ can produce ties or reversals.
+\end{remark}
+
+Table~\ref{tab:values} records the relevant values. The minimum of $f$ is
+quite flat near $e$: base $3$ is within half a percent of the continuous
+optimum, while bases $2$ and $4$ are about six percent above it. Note that
+$f(4)=f(2)$ exactly, since $4/\ln 4 = 2\cdot 2/(2\ln 2)$.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Base $b$ & $f(b)=b/\ln b$ & Excess over $f(e)$ \\
+\midrule
+$2$ & $2.8854$ & $6.15\%$ \\
+$e$ & $2.7183$ & --- \\
+$3$ & $2.7307$ & $0.46\%$ \\
+$4$ & $2.8854$ & $6.15\%$ \\
+$5$ & $3.1067$ & $14.29\%$ \\
+$10$ & $4.3429$ & $59.77\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Asymptotic cost per nat for several bases.}
+\label{tab:values}
+\end{table}
+
+In particular, ternary is cheaper than binary by the factor
+$1 - f(3)/f(2) \approx 5.36\%$.
+
+%======================================================================
+\section{Mixed radices cannot beat ternary}\label{sec:mixed}
+%======================================================================
+
+One might hope to approach the continuous optimum $e$ by mixing integer
+radices, for instance alternating binary and ternary positions. In a
+mixed-radix system with positional radices $b_1,\dots,b_k$ (integers
+$\ge 2$), the number of representable values is $\prod_{i} b_i$, and under
+the same cost model the total cost is $\sum_i b_i$.
+
+\begin{proposition}\label{prop:mixed}
+Let $b_1,\dots,b_k\ge 2$ be integers and suppose $\prod_{i=1}^k b_i \ge N$.
+Then
+\[
+  \sum_{i=1}^k b_i \;\ge\; f(3)\,\ln N,
+\]
+with equality if and only if $b_i=3$ for every $i$ and $N=3^k$.
+\end{proposition}
+
+\begin{proof}
+By Corollary~\ref{cor:three}, $f(b_i)\ge f(3)$ for each $i$, that is,
+$b_i \ge f(3)\ln b_i$. Summing over $i$,
+\[
+  \sum_{i=1}^k b_i \;\ge\; f(3)\sum_{i=1}^k \ln b_i
+  = f(3)\ln\prod_{i=1}^k b_i \;\ge\; f(3)\ln N .
+\]
+Equality in the first step requires $f(b_i)=f(3)$ for every $i$, which by the
+uniqueness in Corollary~\ref{cor:three} forces $b_i=3$. Equality in the last
+step requires $\prod_i b_i = N$, which is then $N = 3^k$. Conversely, these
+conditions clearly give equality.
+\end{proof}
+
+Thus no arrangement of integer radices, however cleverly mixed, improves on
+pure ternary in this model. The constant $f(3)=3/\ln 3$ is a universal lower
+bound for integer-digit positional systems.
+
+%======================================================================
+\section{\texorpdfstring{Base $e$ itself}{Base e itself}}\label{sec:basee}
+%======================================================================
+
+Positional representations in a non-integer base $\beta>1$ were introduced by
+R\'enyi~\cite{renyi} and studied further by Parry~\cite{parry}. For
+$\beta=e$, the greedy algorithm expands any real $x\ge 0$ using the digit
+set $\{0,1,2\}$.
+
+\begin{example}
+The greedy base-$e$ expansion of $10$ begins
+\[
+  10 = 1\cdot e^2 + 0\cdot e + 2 + 1\cdot e^{-1} + 1\cdot e^{-2}
+       + 2\cdot e^{-3} + 0\cdot e^{-4} + 1\cdot e^{-5} + \cdots,
+\]
+that is, $10 = (102.11201\ldots)_e$.
+\end{example}
+
+The expansion in the example does not terminate, and this is unavoidable.
+
+\begin{proposition}\label{prop:nofinite}
+No integer $N\ge 3$ admits a finite expansion
+\[
+  N = \sum_{i=-m}^{n} d_i\, e^{i}, \qquad d_i\in\{0,1,2\}.
+\]
+\end{proposition}
+
+\begin{proof}
+Suppose such an expansion exists, with $m,n\ge 0$. Multiplying by $e^m$ shows
+that $e$ is a root of
+\[
+  P(x) = \sum_{i=-m}^{n} d_i\, x^{i+m} - N x^m \in \mathbb{Z}[x].
+\]
+The coefficient of $x^m$ in $P$ is $d_0 - N$, which is nonzero because
+$d_0\le 2<N$. Hence $P$ is a nonzero integer polynomial with $P(e)=0$,
+contradicting the transcendence of $e$ (Hermite~\cite{hermite}).
+\end{proof}
+
+So base $e$ is optimal in the continuous model but cannot represent
+even small integers exactly with finitely many digits. Base~$3$ is the
+practical realization of the optimum.
+
+%======================================================================
+\section{Remarks on the cost model}
+%======================================================================
+
+The conclusions above depend on the assumption that a $b$-state digit costs
+an amount proportional to $b$. In digital hardware this assumption fails:
+two-state devices are cheap and robust against noise, while intermediate
+voltage levels reduce noise margins. This is a principal reason binary
+logic prevails despite its roughly $5\%$ theoretical disadvantage. Multi-level
+encodings do appear where density is paramount, for example in multi-level
+flash memory cells and four-level pulse-amplitude signaling.
+
+The same optimization governs branching structures. In a tree of branching
+factor $b$ holding $N$ leaves, where selecting a child costs a linear scan of
+up to $b$ options, the total search cost is $b\log_b N = f(b)\ln N$, again
+minimized at $e$ and, over integers, at $3$. If instead a child is selected by
+binary search at cost $\log_2 b$, the total becomes $\log_2 N$ regardless of
+$b$, and the optimization disappears. The appearance of $e$ is therefore a
+consequence of linear cost per state, not a law of nature.
+
+%======================================================================
+\begin{thebibliography}{9}
+
+\bibitem{hayes}
+B.~Hayes, \emph{Third base}, American Scientist \textbf{89} (2001), no.~6,
+490--494.
+
+\bibitem{hermite}
+C.~Hermite, \emph{Sur la fonction exponentielle}, C.~R. Acad. Sci. Paris
+\textbf{77} (1873), 18--24, 74--79, 226--233, 285--293.
+
+\bibitem{knuth}
+D.~E. Knuth, \emph{The Art of Computer Programming, Vol.~2: Seminumerical
+Algorithms}, 3rd ed., Addison-Wesley, Reading, MA, 1997.
+
+\bibitem{parry}
+W.~Parry, \emph{On the $\beta$-expansions of real numbers}, Acta Math. Acad.
+Sci. Hungar. \textbf{11} (1960), 401--416.
+
+\bibitem{renyi}
+A.~R\'enyi, \emph{Representations for real numbers and their ergodic
+properties}, Acta Math. Acad. Sci. Hungar. \textbf{8} (1957), 477--493.
+
+\end{thebibliography}
+
+\end{document}
