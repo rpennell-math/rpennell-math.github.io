@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Complement Theorem in Base N · Tangents</title>
-<meta name="description" content="Why subtracting by adding the radix complement works in any base, with examples in base 10, 5, and 2, and a generalization to mixed radix.">
+<title>Subtraction Without Borrowing: The Method of Complements in Any Base · Tangents</title>
+<meta name="description" content="A short proof that the method of complements works in every base, the negative-difference and modular views, and an extension to mixed radix: clock arithmetic, feet and inches, pounds and ounces, and mixed numbers.">
 <script>
 MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], macros: { dc: ['\\overline{#1}',1], rc: ['{#1}^{\\ast}',1] } } };
 </script>
@@ -17,21 +17,29 @@ MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], macros: { dc: ['\\ove
   .wrap { max-width:760px; margin:0 auto; }
   .kicker { font-family:system-ui,sans-serif; letter-spacing:.08em; text-transform:uppercase; font-size:.85rem; opacity:.85; margin:0; }
   .kicker a { color:#fff; text-decoration:none; }
-  header h1 { font-size:2.2rem; margin:.3rem 0 .5rem; font-weight:normal; }
+  header h1 { font-size:2.1rem; margin:.3rem 0 .2rem; font-weight:normal; }
+  header .sub { font-size:1.2rem; margin:0 0 .6rem; opacity:.92; }
   header p { margin:.2rem 0; opacity:.9; }
   .btns { margin-top:1.3rem; display:flex; gap:.75rem; flex-wrap:wrap; }
   .btn { font-family:system-ui,sans-serif; display:inline-block; padding:.6rem 1.05rem; border-radius:6px; text-decoration:none; font-weight:600; font-size:.95rem; }
   .btn.primary { background:#fff; color:#006648; }
   .btn.ghost { border:1px solid rgba(255,255,255,.6); color:#fff; }
   main { padding:2rem 1.25rem 3rem; font-size:1.07rem; }
-  h2 { font-weight:normal; font-size:1.5rem; margin:2.2rem 0 .6rem; border-bottom:1px solid var(--line); padding-bottom:.3rem; }
+  h2 { font-weight:normal; font-size:1.45rem; margin:2.2rem 0 .6rem; border-bottom:1px solid var(--line); padding-bottom:.3rem; }
+  .abstract { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem 1.25rem; font-size:.98rem; }
+  .abstract .label { font-family:system-ui,sans-serif; font-size:.8rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); display:block; margin-bottom:.3rem; font-weight:600; }
   .env { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px; padding:.9rem 1.2rem; margin:1.2rem 0; }
   .env.plain { border-left-color:#c3c8d1; }
-  .label { font-family:system-ui,sans-serif; font-weight:700; font-size:.95rem; color:var(--accent); }
+  .env .label { font-family:system-ui,sans-serif; font-weight:700; font-size:.95rem; color:var(--accent); }
   .env.plain .label { color:var(--muted); }
+  .env ol { margin:.5rem 0 0; padding-left:1.4rem; }
+  .env li { margin-bottom:.35rem; }
   .proof { margin:.6rem 0 1.4rem 0; }
-  .proof .label { color:var(--ink); font-style:italic; font-family:inherit; font-weight:normal; }
+  .proof > .label, .rem > .label { font-style:italic; }
   .qed { float:right; }
+  .refs { font-size:.95rem; padding-left:1.6rem; }
+  .refs li { margin-bottom:.45rem; }
+  .meta { color:var(--muted); font-size:.9rem; font-family:system-ui,sans-serif; }
   a { color:var(--accent); }
   footer { text-align:center; color:var(--muted); font-size:.85rem; padding:0 1rem 2.5rem; font-family:system-ui,sans-serif; }
   mjx-container[display="true"] { overflow-x:auto; overflow-y:hidden; }
@@ -41,8 +49,9 @@ MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], macros: { dc: ['\\ove
 <header>
   <div class="wrap">
     <p class="kicker"><a href="https://rpennell-math.github.io/">&larr; Home</a> · <a href="./">Tangents</a></p>
-    <h1>The Complement Theorem in Base $N$</h1>
-    <p>Ryan Pennell</p>
+    <h1>Subtraction Without Borrowing</h1>
+    <p class="sub">The Method of Complements in Any Base</p>
+    <p>Ryan Pennell · Ivy Tech Community College, Bloomington, Indiana</p>
     <div class="btns">
       <a class="btn primary" href="complement-theorem.pdf">PDF version</a>
       <a class="btn ghost" href="complement-theorem.tex" download>LaTeX source</a>
@@ -51,63 +60,97 @@ MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']], macros: { dc: ['\\ove
 </header>
 <main class="wrap">
 
-<h2>Setup</h2>
-<p>Fix a base $N \ge 2$ and a working length of $k$ digits. Every integer $y$ with $0 \le y &lt; N^k$ can be written with exactly $k$ digits, padding with leading zeros:
-\[ y = \sum_{i=0}^{k-1} d_i N^i, \qquad 0 \le d_i \le N-1. \]</p>
-
-<div class="env plain"><span class="label">Definition 1.</span>
-The <em>digit complement</em> (or $(N-1)$'s complement) of $y$ is
-\[ \dc{y} = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i, \]
-obtained by replacing each digit $d_i$ with $N-1-d_i$. The <em>radix complement</em> (or $N$'s complement) of $y$ is $\rc{y} = \dc{y} + 1$.
+<div class="abstract"><span class="label">Abstract</span>
+The method of complements turns subtraction into addition: to compute $x - y$, replace each digit of $y$ by its distance from the largest digit, add one, add the result to $x$, and discard the leading carry. Binary two's complement and the nines' complement of mechanical calculators are the best-known instances. We give a short, self-contained proof that the method works in every base $N \ge 2$, explain the case of a negative difference, and record the modular interpretation. We then extend the result to mixed-radix systems, which places clock arithmetic, feet and inches, pounds and ounces, and the subtraction of mixed numbers under a single identity. None of the results are new; the aim is a unified exposition.
 </div>
+<p class="meta">2020 Mathematics Subject Classification: 11A63. Keywords: method of complements, radix complement, two's complement, positional numeration, mixed radix.</p>
 
-<p>In base $2$ these are the one's and two's complements; in base $10$ they are the nines' and tens' complements.</p>
+<h2>1. Introduction</h2>
+<p>Ordinary subtraction requires borrowing, and borrowing is where most errors occur, whether the subtractor is a student or a machine. The <em>method of complements</em> avoids it. In base ten, to subtract $187$ from $523$, one replaces each digit of $187$ by its difference from $9$, obtaining $812$; adds one to get $813$; and computes $523 + 813 = 1336$. Dropping the leading $1$ leaves $336$, which is the correct difference.</p>
+<p>The method is old. Pascal's calculating machine displayed the nines' complement of its result alongside the result itself so that subtraction could be performed by addition, and the keys of the Comptometer carried complement digits in small type for the same purpose <a href="#ref-comptometer">[2]</a>, <a href="#ref-wiki">[4]</a>. It has also been taught to prospective elementary school teachers <a href="#ref-allendoerfer">[1]</a>. In modern computing, the binary version, two's complement, is the standard representation of negative integers <a href="#ref-knuth">[3]</a>.</p>
+<p>This note proves the method in an arbitrary base (<a href="#sec2">Section 2</a>), interprets it modularly, and generalizes it to mixed radix (<a href="#sec3">Section 3</a>), where it explains several familiar &ldquo;regrouping&rdquo; computations at once.</p>
 
-<div class="env"><span class="label">Lemma 2.</span>
-<em>For $0 \le y &lt; N^k$, we have $\dc{y} = N^k - 1 - y$, and hence $\rc{y} = N^k - y$.</em>
+<h2 id="sec2">2. The Method in Base $N$</h2>
+<p>Fix a base $N \ge 2$ and a working length of $k \ge 1$ digits. Every integer $y$ with $0 \le y &lt; N^k$ has a unique representation
+\[ y = \sum_{i=0}^{k-1} d_i N^i, \qquad 0 \le d_i \le N-1, \]
+padded with leading zeros as needed.</p>
+
+<div class="env plain"><span class="label">Definition 2.1.</span>
+The <em>digit complement</em> (or <em>diminished radix complement</em>) of $y$ is
+\[ \dc{y} = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i . \]
+The <em>radix complement</em> of $y$ is $\rc{y} = \dc{y} + 1$.
+</div>
+<p>In base $2$ these are the one's and two's complements, and in base $10$ they are the nines' and tens' complements.</p>
+
+<div class="env"><span class="label">Lemma 2.2.</span>
+<em>For $0 \le y &lt; N^k$, we have $\dc{y} = N^k - 1 - y$. Consequently $\rc{y} = N^k - y$.</em>
 </div>
 <div class="proof"><span class="label">Proof.</span>
-The $k$-digit number whose digits are all $N-1$ is
-\[ \sum_{i=0}^{k-1} (N-1)N^i = (N-1)\cdot\frac{N^k - 1}{N-1} = N^k - 1. \]
-Since each $d_i \le N-1$, subtracting $y$ from $N^k - 1$ digit by digit never requires a borrow, so
-\[ (N^k - 1) - y = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i = \dc{y}. \]
-Adding $1$ gives $\rc{y} = N^k - y$. <span class="qed">$\square$</span>
+The $k$-digit numeral whose digits all equal $N-1$ has value
+\[ \sum_{i=0}^{k-1} (N-1)N^i = N^k - 1 \]
+by the geometric series. Because each $d_i \le N-1$, the subtraction $(N^k-1) - y$ can be performed column by column with no borrowing, and column $i$ yields the digit $N-1-d_i$. Hence $(N^k - 1) - y = \dc{y}$, and adding $1$ gives the second statement. <span class="qed">$\square$</span>
 </div>
+<p>The absence of borrowing in this proof is the whole point of the method: the only subtraction it performs is digit by digit against the largest digit, which never fails.</p>
 
-<div class="env"><span class="label">Theorem 3 (Complement Theorem).</span>
+<div class="env"><span class="label">Theorem 2.3 (Method of complements).</span>
 <em>Let $N \ge 2$ and $k \ge 1$. If $0 \le y \le x &lt; N^k$, then
 \[ x + \rc{y} = N^k + (x - y). \]
-Consequently, the base-$N$ representation of $x + \rc{y}$ is a $1$ in the $N^k$ place followed by the $k$ digits of $x - y$, so dropping the leading $1$ leaves exactly $x - y$.</em>
+In particular, the base-$N$ numeral for $x + \rc{y}$ consists of a $1$ in the $N^k$ place followed by the $k$ digits of $x - y$, so discarding the leading $1$ yields $x - y$.</em>
 </div>
 <div class="proof"><span class="label">Proof.</span>
-By Lemma 2, $x + \rc{y} = x + (N^k - y) = N^k + (x - y)$. Since $0 \le x - y &lt; N^k$, the number $N^k + (x-y)$ written in base $N$ is a $1$ followed by the $k$-digit representation of $x - y$. <span class="qed">$\square$</span>
+By Lemma 2.2, $x + \rc{y} = x + (N^k - y) = N^k + (x - y)$. Since $0 \le x - y &lt; N^k$, the numeral for $N^k + (x - y)$ is a $1$ followed by the $k$-digit numeral for $x - y$. <span class="qed">$\square$</span>
 </div>
 
-<p><em>Remark (the case $x &lt; y$).</em> If $0 \le x &lt; y &lt; N^k$, then
-\[ x + \rc{y} = N^k - (y - x) = \rc{(y-x)} &lt; N^k, \]
-so no carry leaves the $k$-th place, and the result is the radix complement of $y - x$. Thus a carry out signals a nonnegative difference, while no carry signals a negative difference stored in complement form. This is how computers read the sign of a two's-complement result.</p>
+<p class="rem"><span class="label">Remark 2.4 (Negative differences).</span> If instead $0 \le x &lt; y &lt; N^k$, then
+\[ x + \rc{y} = N^k - (y - x) = \rc{(y-x)} &lt; N^k . \]
+No carry leaves the $k$-th place, and the result is the radix complement of the magnitude $y - x$. The presence or absence of a final carry therefore records the sign of the difference. This is the principle behind signed two's-complement arithmetic in computers.</p>
 
-<p><em>Remark (modular view).</em> Lemma 2 says $\rc{y} \equiv -y \pmod{N^k}$. That is, the radix complement is the additive inverse of $y$ in $\mathbb{Z}/N^k\mathbb{Z}$, and &ldquo;dropping the leading $1$&rdquo; is reduction modulo $N^k$.</p>
+<p class="rem"><span class="label">Remark 2.5 (Modular interpretation).</span> Lemma 2.2 says precisely that $\rc{y} \equiv -y \pmod{N^k}$. The radix complement is the additive inverse of $y$ in $\mathbb{Z}/N^k\mathbb{Z}$, and discarding the leading $1$ is reduction modulo $N^k$.</p>
 
-<h2>Examples</h2>
-
-<div class="env plain"><span class="label">Example 4 (Base $10$).</span>
-Compute $523 - 187$. The digit complement of $187$ is $812$, so $\rc{187} = 813$. Then $523 + 813 = 1336$, and dropping the leading $1$ gives $336$.
+<div class="env plain"><span class="label">Example 2.6.</span>
+<ol>
+  <li><em>Base $10$.</em> For $523 - 187$: $\dc{187} = 812$, $\rc{187} = 813$, and $523 + 813 = 1336$, giving $336$.</li>
+  <li><em>Base $5$.</em> For $431_5 - 124_5$ (that is, $116 - 39$): $\dc{124_5} = 320_5$, $\rc{124_5} = 321_5$, and $431_5 + 321_5 = 1302_5$, giving $302_5 = 77$.</li>
+  <li><em>Base $2$.</em> For $1101_2 - 0110_2$ (that is, $13 - 6$): $\dc{0110_2} = 1001_2$, $\rc{0110_2} = 1010_2$, and $1101_2 + 1010_2 = 10111_2$, giving $0111_2 = 7$.</li>
+</ol>
 </div>
 
-<div class="env plain"><span class="label">Example 5 (Base $5$).</span>
-Compute $431_5 - 124_5$, that is, $116 - 39$. The digit complement of $124_5$ is $320_5$, so $\rc{124_5} = 321_5$. Then $431_5 + 321_5 = 1302_5$, and dropping the leading $1$ gives $302_5 = 77$.
+<h2 id="sec3">3. Mixed Radix</h2>
+<p>Nothing in the argument requires every place to share a base. Let $N_0, N_1, \dots, N_{k-1} \ge 2$ be the bases of the successive places, and define place values
+\[ P_0 = 1, \qquad P_{i+1} = N_i P_i, \qquad M = P_k = N_0 N_1 \cdots N_{k-1}. \]
+Every integer $0 \le y &lt; M$ has a unique representation $y = \sum_{i=0}^{k-1} d_i P_i$ with $0 \le d_i \le N_i - 1$. Define the digit complement by $\dc{y} = \sum_{i=0}^{k-1} (N_i - 1 - d_i) P_i$ and the radix complement by $\rc{y} = \dc{y} + 1$.</p>
+
+<div class="env"><span class="label">Theorem 3.1.</span>
+<em>In the mixed-radix system above, $\dc{y} = M - 1 - y$ and $\rc{y} = M - y$. Consequently, if $0 \le y \le x &lt; M$, then $x + \rc{y} = M + (x - y)$, and discarding the carry into the $M$ place yields $x - y$.</em>
+</div>
+<div class="proof"><span class="label">Proof.</span>
+The numeral whose digits are all maximal has value
+\[ \sum_{i=0}^{k-1} (N_i - 1)P_i = \sum_{i=0}^{k-1} (P_{i+1} - P_i) = P_k - P_0 = M - 1, \]
+a telescoping sum. As before, subtracting $y$ from it requires no borrowing, which gives $\dc{y} = M - 1 - y$. The remaining statements follow exactly as in Theorem 2.3. <span class="qed">$\square$</span>
+</div>
+<p>Taking every $N_i = N$ recovers Lemma 2.2, since then $M = N^k$.</p>
+
+<div class="env plain"><span class="label">Example 3.2.</span>
+In each case below, only the last place is complemented, the complement is added, and one unit of the next place is removed.
+<ol>
+  <li><em>Minutes (base $60$).</em> To find $20$ minutes before 3:15, add $60 - 20 = 40$ minutes to get 3:55, then remove one hour: 2:55.</li>
+  <li><em>Feet and inches (base $12$).</em> For $5\text{ ft }3\text{ in} - 7\text{ in}$, add $12 - 7 = 5$ inches to get $5\text{ ft }8\text{ in}$, then remove a foot: $4\text{ ft }8\text{ in}$.</li>
+  <li><em>Pounds and ounces (base $16$).</em> For $6\text{ lb }4\text{ oz} - 9\text{ oz}$, add $16 - 9 = 7$ ounces to get $6\text{ lb }11\text{ oz}$, then remove a pound: $5\text{ lb }11\text{ oz}$.</li>
+  <li><em>Mixed numbers.</em> The denominator plays the role of the base. For $5\tfrac14 - \tfrac34$, add $1 - \tfrac34 = \tfrac14$ to get $5\tfrac24$, then remove one whole: $4\tfrac24 = 4\tfrac12$.</li>
+</ol>
 </div>
 
-<div class="env plain"><span class="label">Example 6 (Base $2$).</span>
-Compute $1101_2 - 0110_2$, that is, $13 - 6$. Flipping gives $1001_2$, so $\rc{0110_2} = 1010_2$. Then $1101_2 + 1010_2 = 10111_2$, and dropping the leading $1$ gives $0111_2 = 7$.
-</div>
+<p>Every example above is an instance of the identity
+\[ a - b = a + (M - b) - M, \]
+where $M$ is the unit being &ldquo;borrowed&rdquo; from. In the classroom this is the familiar strategy of counting up, the same procedure a cashier uses to make change.</p>
 
-<h2>Generalization to Mixed Radix</h2>
-<p>Nothing requires every place to share the same base. Suppose place $i$ has base $N_i \ge 2$, so the place values are $1, N_0, N_0N_1, \dots$ and the largest $k$-place number is $M - 1$, where $M = N_0 N_1 \cdots N_{k-1}$. Replacing each digit $d_i$ with $N_i - 1 - d_i$ again requires no borrowing and yields $M - 1 - y$, and the same argument gives
-\[ x + (M - y) = M + (x - y). \]
-This covers hours and minutes (base $60$), feet and inches (base $12$), and pounds and ounces (base $16$). In every case the theorem is an instance of the identity
-\[ a - b = a + (M - b) - M. \]</p>
+<h2>References</h2>
+<ol class="refs">
+  <li id="ref-allendoerfer">C. B. Allendoerfer, <em>Principles of Arithmetic and Geometry for Elementary School Teachers</em>, Macmillan, New York, 1971.</li>
+  <li id="ref-comptometer">Felt and Tarrant Manufacturing Co., Comptometer Division, <em>Easy Instructions for Operating the Controlled Key Comptometer</em>, Chicago, 1917.</li>
+  <li id="ref-knuth">D. E. Knuth, <em>The Art of Computer Programming, Vol. 2: Seminumerical Algorithms</em>, 3rd ed., Addison-Wesley, Reading, MA, 1997.</li>
+  <li id="ref-wiki">Wikipedia contributors, <em>Method of complements</em>, <a href="https://en.wikipedia.org/wiki/Method_of_complements">https://en.wikipedia.org/wiki/Method_of_complements</a>, accessed November 17, 2026.</li>
+</ol>
 
 </main>
 <footer><a href="./">More from Tangents</a> · Ryan Pennell, Ivy Tech Bloomington</footer>

@@ -1,128 +1,239 @@
-\documentclass[11pt]{article}
-\usepackage[margin=1in]{geometry}
+\documentclass[11pt]{amsart}
+\usepackage[margin=1.1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
 
-\newtheorem{theorem}{Theorem}
+\newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{example}[theorem]{Example}
 \theoremstyle{remark}
-\newtheorem*{remark}{Remark}
+\newtheorem{remark}[theorem]{Remark}
 
-\newcommand{\dc}[1]{\overline{#1}}          % digit complement
-\newcommand{\rc}[1]{#1^{\ast}}              % radix complement
-
-\title{The Complement Theorem in Base $N$}
-\author{Ryan Pennell}
-\date{}
+\newcommand{\dc}[1]{\overline{#1}}   % digit complement
+\newcommand{\rc}[1]{#1^{\ast}}       % radix complement
 
 \begin{document}
+
+\title{Subtraction Without Borrowing:\texorpdfstring{\\}{ } The Method of Complements in Any Base}
+
+\author{Ryan Pennell}
+\address{Ivy Tech Community College, Bloomington, Indiana}
+
+\subjclass[2020]{11A63}
+\keywords{method of complements, radix complement, two's complement, positional numeration, mixed radix}
+
+\date{\today}
+
+\begin{abstract}
+The method of complements turns subtraction into addition: to compute $x - y$,
+replace each digit of $y$ by its distance from the largest digit, add one, add
+the result to $x$, and discard the leading carry. Binary two's complement and the
+nines' complement of mechanical calculators are the best-known instances. We give
+a short, self-contained proof that the method works in every base $N \ge 2$,
+explain the case of a negative difference, and record the modular interpretation.
+We then extend the result to mixed-radix systems, which places clock arithmetic,
+feet and inches, pounds and ounces, and the subtraction of mixed numbers under
+a single identity. None of the results are new; the aim is a unified exposition.
+\end{abstract}
+
 \maketitle
 
-\section*{Setup}
+%--------------------------------------------------------------------
+\section{Introduction}
 
-Fix a base $N \ge 2$ and a working length of $k$ digits. Every integer $y$ with
-$0 \le y < N^k$ can be written with exactly $k$ digits, padding with leading zeros:
+Ordinary subtraction requires borrowing, and borrowing is where most errors
+occur, whether the subtractor is a student or a machine. The \emph{method of
+complements} avoids it. In base ten, to subtract $187$ from $523$, one replaces
+each digit of $187$ by its difference from $9$, obtaining $812$; adds one to get
+$813$; and computes $523 + 813 = 1336$. Dropping the leading $1$ leaves $336$,
+which is the correct difference.
+
+The method is old. Pascal's calculating machine displayed the nines' complement
+of its result alongside the result itself so that subtraction could be performed
+by addition, and the keys of the Comptometer carried complement digits in small
+type for the same purpose \cite{comptometer,wiki}. It has also been taught to
+prospective elementary school teachers \cite{allendoerfer}. In modern computing,
+the binary version, two's complement, is the standard representation of negative
+integers \cite{knuth}.
+
+This note proves the method in an arbitrary base (Section~\ref{sec:base}),
+interprets it modularly, and generalizes it to mixed radix
+(Section~\ref{sec:mixed}), where it explains several familiar ``regrouping''
+computations at once.
+
+%--------------------------------------------------------------------
+\section{The Method in Base \texorpdfstring{$N$}{N}}\label{sec:base}
+
+Fix a base $N \ge 2$ and a working length of $k \ge 1$ digits. Every integer $y$
+with $0 \le y < N^k$ has a unique representation
 \[
-  y = \sum_{i=0}^{k-1} d_i N^i, \qquad 0 \le d_i \le N-1.
+  y = \sum_{i=0}^{k-1} d_i N^i, \qquad 0 \le d_i \le N-1,
 \]
+padded with leading zeros as needed.
 
 \begin{definition}
-The \emph{digit complement} (or $(N-1)$'s complement) of $y$ is
+The \emph{digit complement} (or \emph{diminished radix complement}) of $y$ is
 \[
-  \dc{y} = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i,
+  \dc{y} = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i .
 \]
-obtained by replacing each digit $d_i$ with $N-1-d_i$.
-The \emph{radix complement} (or $N$'s complement) of $y$ is $\rc{y} = \dc{y} + 1$.
+The \emph{radix complement} of $y$ is $\rc{y} = \dc{y} + 1$.
 \end{definition}
 
-In base $2$ these are the one's and two's complements; in base $10$ they are the
-nines' and tens' complements.
+In base $2$ these are the one's and two's complements, and in base $10$ they are
+the nines' and tens' complements.
 
 \begin{lemma}\label{lem:dc}
-For $0 \le y < N^k$, we have $\dc{y} = N^k - 1 - y$, and hence $\rc{y} = N^k - y$.
+For $0 \le y < N^k$, we have $\dc{y} = N^k - 1 - y$. Consequently
+$\rc{y} = N^k - y$.
 \end{lemma}
 
 \begin{proof}
-The $k$-digit number whose digits are all $N-1$ is
+The $k$-digit numeral whose digits all equal $N-1$ has value
 \[
-  \sum_{i=0}^{k-1} (N-1)N^i = (N-1)\cdot\frac{N^k - 1}{N-1} = N^k - 1.
+  \sum_{i=0}^{k-1} (N-1)N^i = N^k - 1
 \]
-Since each $d_i \le N-1$, subtracting $y$ from $N^k - 1$ digit by digit never
-requires a borrow, so
-\[
-  (N^k - 1) - y = \sum_{i=0}^{k-1} (N-1-d_i)\, N^i = \dc{y}.
-\]
-Adding $1$ gives $\rc{y} = N^k - y$.
+by the geometric series. Because each $d_i \le N-1$, the subtraction
+$(N^k-1) - y$ can be performed column by column with no borrowing, and column $i$
+yields the digit $N-1-d_i$. Hence $(N^k - 1) - y = \dc{y}$, and adding $1$ gives
+the second statement.
 \end{proof}
 
-\begin{theorem}[Complement Theorem]\label{thm:main}
+The absence of borrowing in this proof is the whole point of the method: the
+only subtraction it performs is digit by digit against the largest digit, which
+never fails.
+
+\begin{theorem}[Method of complements]\label{thm:main}
 Let $N \ge 2$ and $k \ge 1$. If $0 \le y \le x < N^k$, then
 \[
   x + \rc{y} = N^k + (x - y).
 \]
-Consequently, the base-$N$ representation of $x + \rc{y}$ is a $1$ in the $N^k$
-place followed by the $k$ digits of $x - y$, so dropping the leading $1$ leaves
-exactly $x - y$.
+In particular, the base-$N$ numeral for $x + \rc{y}$ consists of a $1$ in the
+$N^k$ place followed by the $k$ digits of $x - y$, so discarding the leading $1$
+yields $x - y$.
 \end{theorem}
 
 \begin{proof}
-By Lemma~\ref{lem:dc}, $x + \rc{y} = x + (N^k - y) = N^k + (x - y)$.
-Since $0 \le x - y < N^k$, the number $N^k + (x-y)$ written in base $N$ is a $1$
-followed by the $k$-digit representation of $x - y$.
+By Lemma~\ref{lem:dc}, $x + \rc{y} = x + (N^k - y) = N^k + (x - y)$. Since
+$0 \le x - y < N^k$, the numeral for $N^k + (x - y)$ is a $1$ followed by the
+$k$-digit numeral for $x - y$.
 \end{proof}
 
-\begin{remark}[The case $x < y$]
-If $0 \le x < y < N^k$, then
+\begin{remark}[Negative differences]
+If instead $0 \le x < y < N^k$, then
 \[
-  x + \rc{y} = N^k - (y - x) = \rc{(y-x)} < N^k,
+  x + \rc{y} = N^k - (y - x) = \rc{(y-x)} < N^k .
 \]
-so no carry leaves the $k$-th place, and the result is the radix complement of
-$y - x$. Thus a carry out signals a nonnegative difference, while no carry signals
-a negative difference stored in complement form. This is how computers read the
-sign of a two's-complement result.
+No carry leaves the $k$-th place, and the result is the radix complement of the
+magnitude $y - x$. The presence or absence of a final carry therefore records the
+sign of the difference. This is the principle behind signed two's-complement
+arithmetic in computers.
 \end{remark}
 
-\begin{remark}[Modular view]
-Lemma~\ref{lem:dc} says $\rc{y} \equiv -y \pmod{N^k}$. That is, the radix complement
-is the additive inverse of $y$ in $\mathbb{Z}/N^k\mathbb{Z}$, and ``dropping the
-leading $1$'' is reduction modulo $N^k$.
+\begin{remark}[Modular interpretation]
+Lemma~\ref{lem:dc} says precisely that $\rc{y} \equiv -y \pmod{N^k}$. The radix
+complement is the additive inverse of $y$ in $\mathbb{Z}/N^k\mathbb{Z}$, and
+discarding the leading $1$ is reduction modulo $N^k$.
 \end{remark}
 
-\section*{Examples}
-
-\begin{example}[Base $10$]
-Compute $523 - 187$. The digit complement of $187$ is $812$, so $\rc{187} = 813$.
-Then $523 + 813 = 1336$, and dropping the leading $1$ gives $336$.
+\begin{example}
+\leavevmode
+\begin{enumerate}
+\item \emph{Base $10$.} For $523 - 187$: $\dc{187} = 812$, $\rc{187} = 813$, and
+  $523 + 813 = 1336$, giving $336$.
+\item \emph{Base $5$.} For $431_5 - 124_5$ (that is, $116 - 39$):
+  $\dc{124_5} = 320_5$, $\rc{124_5} = 321_5$, and $431_5 + 321_5 = 1302_5$, giving
+  $302_5 = 77$.
+\item \emph{Base $2$.} For $1101_2 - 0110_2$ (that is, $13 - 6$):
+  $\dc{0110_2} = 1001_2$, $\rc{0110_2} = 1010_2$, and $1101_2 + 1010_2 = 10111_2$,
+  giving $0111_2 = 7$.
+\end{enumerate}
 \end{example}
 
-\begin{example}[Base $5$]
-Compute $431_5 - 124_5$, that is, $116 - 39$. The digit complement of $124_5$ is
-$320_5$, so $\rc{124_5} = 321_5$. Then $431_5 + 321_5 = 1302_5$, and dropping the
-leading $1$ gives $302_5 = 77$.
-\end{example}
+%--------------------------------------------------------------------
+\section{Mixed Radix}\label{sec:mixed}
 
-\begin{example}[Base $2$]
-Compute $1101_2 - 0110_2$, that is, $13 - 6$. Flipping gives $1001_2$, so
-$\rc{0110_2} = 1010_2$. Then $1101_2 + 1010_2 = 10111_2$, and dropping the leading
-$1$ gives $0111_2 = 7$.
-\end{example}
-
-\section*{Generalization to Mixed Radix}
-
-Nothing requires every place to share the same base. Suppose place $i$ has base
-$N_i \ge 2$, so the place values are $1, N_0, N_0N_1, \dots$ and the largest
-$k$-place number is $M - 1$, where $M = N_0 N_1 \cdots N_{k-1}$. Replacing each
-digit $d_i$ with $N_i - 1 - d_i$ again requires no borrowing and yields $M - 1 - y$,
-and the same argument gives
+Nothing in the argument requires every place to share a base. Let
+$N_0, N_1, \dots, N_{k-1} \ge 2$ be the bases of the successive places, and define
+place values
 \[
-  x + (M - y) = M + (x - y).
+  P_0 = 1, \qquad P_{i+1} = N_i P_i, \qquad M = P_k = N_0 N_1 \cdots N_{k-1}.
 \]
-This covers hours and minutes (base $60$), feet and inches (base $12$), and pounds
-and ounces (base $16$). In every case the theorem is an instance of the identity
+Every integer $0 \le y < M$ has a unique representation
+$y = \sum_{i=0}^{k-1} d_i P_i$ with $0 \le d_i \le N_i - 1$. Define the digit
+complement by $\dc{y} = \sum_{i=0}^{k-1} (N_i - 1 - d_i) P_i$ and the radix
+complement by $\rc{y} = \dc{y} + 1$.
+
+\begin{theorem}\label{thm:mixed}
+In the mixed-radix system above, $\dc{y} = M - 1 - y$ and $\rc{y} = M - y$.
+Consequently, if $0 \le y \le x < M$, then $x + \rc{y} = M + (x - y)$, and
+discarding the carry into the $M$ place yields $x - y$.
+\end{theorem}
+
+\begin{proof}
+The numeral whose digits are all maximal has value
 \[
-  a - b = a + (M - b) - M.
+  \sum_{i=0}^{k-1} (N_i - 1)P_i = \sum_{i=0}^{k-1} (P_{i+1} - P_i) = P_k - P_0 = M - 1,
 \]
+a telescoping sum. As before, subtracting $y$ from it requires no borrowing,
+which gives $\dc{y} = M - 1 - y$. The remaining statements follow exactly as in
+Theorem~\ref{thm:main}.
+\end{proof}
+
+Taking every $N_i = N$ recovers Lemma~\ref{lem:dc}, since then $M = N^k$.
+
+\begin{example}
+In each case below, only the last place is complemented, the complement is added,
+and one unit of the next place is removed.
+\begin{enumerate}
+\item \emph{Minutes (base $60$).} To find $20$ minutes before 3:15, add
+  $60 - 20 = 40$ minutes to get 3:55, then remove one hour: 2:55.
+\item \emph{Feet and inches (base $12$).} For $5\text{ ft }3\text{ in} - 7\text{ in}$,
+  add $12 - 7 = 5$ inches to get $5\text{ ft }8\text{ in}$, then remove a foot:
+  $4\text{ ft }8\text{ in}$.
+\item \emph{Pounds and ounces (base $16$).} For
+  $6\text{ lb }4\text{ oz} - 9\text{ oz}$, add $16 - 9 = 7$ ounces to get
+  $6\text{ lb }11\text{ oz}$, then remove a pound: $5\text{ lb }11\text{ oz}$.
+\item \emph{Mixed numbers.} The denominator plays the role of the base. For
+  $5\tfrac14 - \tfrac34$, add $1 - \tfrac34 = \tfrac14$ to get $5\tfrac24$, then
+  remove one whole: $4\tfrac24 = 4\tfrac12$.
+\end{enumerate}
+\end{example}
+
+Every example above is an instance of the identity
+\[
+  a - b = a + (M - b) - M,
+\]
+where $M$ is the unit being ``borrowed'' from. In the classroom this is the
+familiar strategy of counting up, the same procedure a cashier uses to make
+change.
+
+%--------------------------------------------------------------------
+\begin{thebibliography}{9}
+
+\bibitem{allendoerfer}
+C.~B. Allendoerfer,
+\emph{Principles of Arithmetic and Geometry for Elementary School Teachers},
+Macmillan, New York, 1971.
+
+\bibitem{comptometer}
+Felt and Tarrant Manufacturing Co., Comptometer Division,
+\emph{Easy Instructions for Operating the Controlled Key Comptometer},
+Chicago, 1917.
+
+\bibitem{knuth}
+D.~E. Knuth,
+\emph{The Art of Computer Programming, Vol.~2: Seminumerical Algorithms},
+3rd ed., Addison-Wesley, Reading, MA, 1997.
+
+\bibitem{wiki}
+Wikipedia contributors,
+\emph{Method of complements},
+\url{https://en.wikipedia.org/wiki/Method_of_complements},
+accessed November 17, 2026.
+
+\end{thebibliography}
 
 \end{document}
