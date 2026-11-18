@@ -1,0 +1,133 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\artanh}{artanh}
+\DeclareMathOperator{\Ai}{Ai}
+\DeclareMathOperator{\Bi}{Bi}
+\renewcommand{\Re}{\operatorname{Re}}
+
+\title{Cleo's Integrals}
+\author{Ryan Pennell}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\section*{A ten-character answer}
+
+On November 11, 2013, a user on Mathematics Stack Exchange asked for help with a definite integral. Mathematica and Maple had both failed to find a closed form. Four and a half hours later, a brand-new account called Cleo answered with one line: $4\pi\arccot\sqrt{\varphi}$, where $\varphi$ is the golden ratio. There was no derivation and no explanation, just a hyperlink on the $\varphi$.
+
+The answer was right. Over the next two years Cleo posted 39 answers like it, almost all hard definite integrals, almost all correct, and none with any work shown. The community argued about whether such answers belonged on a site built around explanations. People speculated about who Cleo was: a lone genius, a committee, or a computer. In early 2025 the account was confirmed to belong to Vladimir Reshetnikov, a software developer and longtime contributor to the site.
+
+Most retellings focus on the mystery. This article is about the math. What did Cleo's problems actually look like? Why are the answers true? And how could someone produce a correct closed form without a proof in hand?
+
+\section*{The golden-ratio integral}
+
+Here is the problem from November 2013, with Cleo's answer:
+\[
+I=\int_{-1}^{1}\frac{1}{x}\sqrt{\frac{1+x}{1-x}}\,\ln\!\left(\frac{2x^2+2x+1}{2x^2-2x+1}\right)dx
+\;=\; 4\pi\arccot\sqrt{\varphi},\qquad \varphi=\frac{1+\sqrt5}{2}.
+\]
+Both sides equal $8.372211626601275661\ldots$ to as many digits as you care to compute. The famous proof, by Ron Gordon, used contour integration and a symmetry argument that cut an eighth-degree polynomial down to a quadratic. It earned over 1,000 upvotes. Below is a different route that needs only symmetry, one complex number and differentiation under the integral sign.
+
+\paragraph{Step 1: fold the interval in half.} Write $L(x)$ for the logarithm. It is an odd function, so $L(x)/x$ is even. The square-root factor is not even, but it pairs nicely with its mirror image:
+\[
+\sqrt{\frac{1+x}{1-x}}+\sqrt{\frac{1-x}{1+x}}=\frac{2}{\sqrt{1-x^2}}
+\quad\Longrightarrow\quad
+I=2\int_0^1\frac{L(x)}{x\sqrt{1-x^2}}\,dx.
+\]
+
+\paragraph{Step 2: spot the complex number.} The two quadratics are sums of squares in disguise: $2x^2+2x+1=(1+x)^2+x^2$, the squared modulus of $1+(1+i)x$. The denominator is the same with $x$ replaced by $-x$. So with $c=1+i$,
+\[
+L(x)=\ln\left|\frac{1+cx}{1-cx}\right|^2=4\Re\artanh(cx)
+\quad\Longrightarrow\quad
+I=8\Re F(1+i),\qquad F(c)=\int_0^1\frac{\artanh(cx)}{x\sqrt{1-x^2}}\,dx.
+\]
+
+\paragraph{Step 3: differentiate with respect to $c$.} The troublesome $1/x$ disappears:
+\[
+F'(c)=\int_0^1\frac{dx}{(1-c^2x^2)\sqrt{1-x^2}}=\int_0^{\pi/2}\frac{d\theta}{1-c^2\sin^2\theta}=\frac{\pi}{2\sqrt{1-c^2}}.
+\]
+The middle step is $x=\sin\theta$, and the last one is a standard Calculus~II exercise (divide by $\cos^2\theta$ and substitute $u=\tan\theta$). Since $F(0)=0$, integrating back gives $F(c)=\frac{\pi}{2}\arcsin c$. This holds for real $c$ between $-1$ and $1$, and it extends to $c=1+i$ because $1-c^2x^2$ never vanishes along the path $c=t(1+i)$. So $I=4\pi\Re\arcsin(1+i)$.
+
+\paragraph{Step 4: where $\varphi$ comes from.} For any complex $z$, the real part of $\arcsin z$ is the arcsine of half the difference of the distances from $z$ to $-1$ and to $1$. For $z=1+i$ those distances are $\sqrt5$ and $1$:
+\[
+\Re\arcsin(1+i)=\arcsin\frac{\sqrt5-1}{2}=\arcsin\frac{1}{\varphi}.
+\]
+Finally, if $\sin\theta=1/\varphi$, then $\cot\theta=\sqrt{\varphi^2-1}=\sqrt{\varphi}$, because $\varphi^2=\varphi+1$. That gives $I=4\pi\arccot\sqrt{\varphi}$, which is Cleo's answer. The golden ratio was never really inside the integral. It is the distance $\sqrt5$ from $1+i$ to $-1$, in disguise.
+
+\section*{The Airy integral}
+
+In May 2015, Cleo posted a result without proof on a question about this family of integrals:
+\[
+\mathcal K(p)=\int_0^\infty\frac{x^p}{\Ai^2(x)+\Bi^2(x)}\,dx.
+\]
+$\Ai$ and $\Bi$ are the Airy functions, the two standard solutions of $y''=xy$. They look exotic, but the simplest case, $p=0$, gives up its secret to a single idea from a differential equations course: the Wronskian. For Airy functions it is a constant, $\Ai\cdot\Bi'-\Ai'\cdot\Bi=1/\pi$. Now differentiate $\arctan(\Bi/\Ai)$ with the quotient rule:
+\[
+\frac{d}{dx}\arctan\frac{\Bi(x)}{\Ai(x)}=\frac{\Ai\Bi'-\Ai'\Bi}{\Ai^2+\Bi^2}=\frac{1/\pi}{\Ai^2+\Bi^2}.
+\]
+So the integrand has an elementary antiderivative after all. As $x$ grows, $\Ai$ decays and $\Bi$ explodes, so the arctangent climbs to $\pi/2$. At $x=0$ the ratio $\Bi(0)/\Ai(0)$ is exactly $\sqrt3$, so the arctangent starts at $\pi/3$. Therefore
+\[
+\mathcal K(0)=\pi\left(\frac{\pi}{2}-\frac{\pi}{3}\right)=\frac{\pi^2}{6}.
+\]
+That is $\zeta(2)$, the Basel sum $1+\frac14+\frac19+\cdots$, appearing out of a pair of special functions. The case $p=0$ is a known identity (it is formula 9.11.19 in the NIST Digital Library of Mathematical Functions). The higher cases are much harder. Numerics suggested $\mathcal K(3)=5\pi^2/32$ and $\mathcal K(6)=565\pi^2/512$, and a later answer confirmed these with an asymptotic expansion and residue calculus. $\mathcal K(3)$ agrees with $5\pi^2/32$ to 40 digits.
+
+\section*{The rest of the 39}
+
+The other answers share a family resemblance. The integrands mix logarithms, arctangents, square roots and occasionally special functions. The limits are usually $0$, $1$, $\pi/2$ or $\infty$. The answers involve $\pi$, logarithms of algebraic numbers, polylogarithms and the occasional golden ratio. One example:
+\[
+\int_0^{\pi/2}\arctan^2\!\left(\frac{\sin x}{\sqrt3+\cos x}\right)dx\approx 0.15637139137571170123.
+\]
+Commenters noted that Cleo's closed form should follow from standard polylogarithm identities. A good first move is to notice that the arctangent is the argument (the angle) of the complex number $\sqrt3+e^{ix}$. So the integrand is the square of the imaginary part of $\ln(\sqrt3+e^{ix})$. Expand that logarithm as a power series in $e^{ix}/\sqrt3$, square it, integrate term by term, and polylogarithms at $1/\sqrt3$ start to appear.
+
+This pattern of an answer that is not a formula you would ever guess but is exactly right shows up outside Cleo's account too. Here is an integral in the same spirit, with a proof due to David Speyer:
+\[
+\int_0^1\frac{\ln\!\left(1+x^{2+\sqrt3}\right)}{1+x}\,dx=\frac{\pi^2}{12}\left(1-\sqrt3\right)+\ln2\,\ln\!\left(1+\sqrt3\right).
+\]
+The exponent $2+\sqrt3$ looks arbitrary, but it isn't. Call the integral $F(\alpha)$, with $\alpha$ as the exponent. A short calculation shows that $F(\alpha)+F(1/\alpha)=(\ln 2)^2$ for every positive $\alpha$. Since the reciprocal of $2+\sqrt3$ is $2-\sqrt3$, this particular exponent is set up so that one more trick finishes the job.
+
+\section*{Answers before proofs}
+
+How do you produce a correct closed form with no derivation? You don't need to be Ramanujan. You need high-precision arithmetic and a good guess about which constants might appear. This is what mathematicians call experimental mathematics. Here is how it might go for the golden-ratio integral.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Compute the integral to many digits.} Numerical integration in a package like mpmath gives $I=8.37221162660127566162574712\ldots$ in a fraction of a second.
+\item \textbf{Strip off the obvious constants.} Integrals over symmetric intervals with square roots often produce a factor of $\pi$. Dividing by $4\pi$ gives $0.66623943249251525510\ldots$, which is less than $\pi/2$, so it might be an angle.
+\item \textbf{Try trig functions of the angle.} The squared cotangent of that angle is \[1.6180339887498948482\ldots\] Anyone who has seen the golden ratio recognizes those digits.
+\item \textbf{Confirm with an integer relation algorithm.} An algorithm such as PSLQ searches for small integer coefficients that make a combination of numbers vanish. Given $\cot^2$ of the angle, it returns $x^2-x-1=0$, with 30 digits of agreement.
+\end{enumerate}
+
+Thirty matching digits is not a proof, but it is overwhelming evidence, and it tells you exactly what to prove. Tools like the Inverse Symbolic Calculator and Mathematica's built-in recognizers automate steps 2 through 4. Steps 1 and 4 also explain why Cleo's answers could come so fast. The hard part, the proof, could be skipped.
+
+The other half of the trick is choosing the problems. According to accounts of the 2025 investigation, Reshetnikov often started from integrals with known values and modified them just enough that computer algebra systems failed. If you build the puzzle, you already hold the key. That doesn't make the answers less correct or the integrals less interesting. It does take the sorcery out of the timing.
+
+\section*{What Cleo was for}
+
+Cleo's profile described a woman with a medical condition that made long answers difficult. That story was invented. In April 2023, David Schneider-Joseph pointed out on X that Cleo's account history lined up with several accounts run by Vladimir Reshetnikov, and a Reddit user's analysis later that year found the same links. In February 2025, Reshetnikov posted a Base64 message on his own Stack Exchange profile. Decoded, it read ``Creator of Cleo.'' He explained that he had been frustrated when his integral questions drew comments like ``Why is this interesting?'' or ``What makes you think that it may have a closed-form solution?'' Cleo was his way of getting people to take those questions seriously.
+
+It worked. Other users went on to prove Cleo's results, and some of those proofs are among the best-loved posts on the site. A bare answer turned out to be a strong prompt. Once you know the integral equals $4\pi\arccot\sqrt{\varphi}$, you know where to aim: the golden ratio has to come from somewhere, and finding where is a much better puzzle than ``evaluate this.''
+
+That may be the lasting lesson for anyone who teaches. Students often treat the answer as the goal and the work as the price. Cleo's integrals reverse that. The answer was free, and everything worth having was in the proof.
+
+\section*{Sources}
+
+\begin{itemize}[leftmargin=*]
+\item \href{https://en.wikipedia.org/wiki/Cleo_(mathematician)}{Cleo (mathematician)}, Wikipedia.
+\item \href{https://www.scientificamerican.com/podcast/episode/cleo-the-mysterious-math-menace/}{Cleo, the Mysterious Math Menace}, Scientific American podcast.
+\item \href{https://www.planksip.org/who-the-hell-is-cleo/}{Who the Hell is\ldots\ Cleo?}, transcript of the original question and answer.
+\item \href{https://mathstx.blogspot.com/2016/06/calculus-integral-involving-airy.html}{Integral involving Airy functions}, mirror of the Math.SE question on $\mathcal K(p)$.
+\item \href{https://dlmf.nist.gov/9.11}{DLMF \S9.11, Products of Airy functions}, NIST.
+\item \href{https://www3.nd.edu/~ajorza/courses/2014s-m80220/notes/lecture31.pdf}{Lecture 31: A peculiar integral}, Andrei Jorza's notes on David Speyer's proof.
+\item \href{https://news.ycombinator.com/item?id=50002332}{Hacker News discussion of the reveal}.
+\end{itemize}
+
+\noindent All numerical values in this article were checked to at least 25 digits with mpmath.
+
+\end{document}
