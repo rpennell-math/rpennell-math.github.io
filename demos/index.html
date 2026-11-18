@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Demos · Ryan Pennell</title>
+<meta name="description" content="Interactive demos for calculus and other math topics by Ryan Pennell.">
+<style>
+  :root { --ink:#1d2433; --muted:#5b6475; --line:#e3e6ec; --bg:#fafbfc; --accent:#006648; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: Georgia, "Times New Roman", serif; color:var(--ink); background:var(--bg); line-height:1.5; }
+  header { background:#006648; color:#fff; padding:3rem 1.25rem 2.5rem; }
+  .wrap { max-width:880px; margin:0 auto; }
+  .kicker { font-family:system-ui,sans-serif; letter-spacing:.08em; text-transform:uppercase; font-size:.85rem; opacity:.85; margin:0; }
+  .kicker a { color:#fff; text-decoration:none; }
+  header h1 { font-size:2.4rem; margin:.3rem 0 .6rem; font-weight:normal; }
+  header p { margin:.2rem 0; opacity:.9; max-width:40rem; }
+  main { padding:2.25rem 1.25rem 3rem; }
+  .sechead { font-family:system-ui,sans-serif; font-size:.85rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 .75rem; font-weight:600; }
+  .post { display:block; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px; padding:1.1rem 1.3rem; margin-bottom:1rem; text-decoration:none; color:var(--ink); }
+  .post:hover { background:#eef6f2; }
+  .post:hover h2 { color:var(--accent); text-decoration:underline; }
+  .tag { font-family:system-ui,sans-serif; font-size:.78rem; text-transform:uppercase; letter-spacing:.07em; color:var(--accent); }
+  .post h2 { font-size:1.35rem; font-weight:normal; margin:.15rem 0 .35rem; }
+  .post p { margin:0; color:var(--muted); font-size:.97rem; }
+  footer { text-align:center; color:var(--muted); font-size:.85rem; padding:0 1rem 2.5rem; font-family:system-ui,sans-serif; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="kicker"><a href="https://rpennell-math.github.io/">&larr; Home</a></p>
+    <h1>Interactive Demos</h1>
+    <p>Pictures you can play with: drag, adjust, and watch the math happen.</p>
+  </div>
+</header>
+<main class="wrap">
+  <h2 class="sechead">Calculus</h2>
+  <a class="post" href="epsilon-delta.html">
+    <span class="tag">Limits</span>
+    <h2>The &epsilon;&ndash;&delta; Definition of a Limit</h2>
+    <p>Play the limit game: your opponent picks &epsilon;, you answer with &delta;. Drag on the graph to watch where the function stays in the band and where it escapes, for limits that work (x&sup2;, sin x/x, x sin(1/x)) and ones that fail (a jump, sin(1/x)), or type in your own function.</p>
+  </a>
+  <a class="post" href="squeeze-theorem.html">
+    <span class="tag">Limits</span>
+    <h2>The Squeeze Theorem, &epsilon;&ndash;&delta; Style</h2>
+    <p>The proof as a picture: find &delta; for the lower bound, &delta; for the upper bound, take the smaller one, and the trapped function has nowhere to go. Examples include x&sup2; sin(1/x) and sin x/x, plus one where the bounds disagree and the theorem says nothing.</p>
+  </a>
+</main>
+<footer>Ryan Pennell, Ivy Tech Bloomington</footer>
+</body>
+</html>

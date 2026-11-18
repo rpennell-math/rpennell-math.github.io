@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Squeeze Theorem, ε–δ Style · Interactive Demos</title>
+<meta name="description" content="An interactive picture of the squeeze theorem: choose ε, take δ = min(δ_g, δ_h), and watch the trapped function stay in the band.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf8f4; --panel:#fff; --ink:#1f2328; --muted:#5f6670; --line:#e4e0d8;
+    --eps:#2f6fdb; --del:#c9831a; --good:#1a8a4a; --bad:#d23a2e;
+    --g:#7b4fc9; --h:#0e8f8f; --f:#1f2328;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+  header{max-width:1180px;margin:0 auto;padding:28px 20px 8px}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:2rem;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0}
+  .crumbs{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+  .crumbs a{color:#006648;text-decoration:none;font-weight:600}
+  .defn{font-family:"Source Serif 4",Georgia,serif;font-size:1.12rem;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--g);border-radius:8px;padding:14px 18px;margin:18px 0 0}
+  .e{color:var(--eps);font-weight:600} .d{color:var(--del);font-weight:600}
+  .gc{color:var(--g);font-weight:600} .hc{color:var(--h);font-weight:600} .fc{font-weight:700}
+  main{max-width:1180px;margin:0 auto;padding:16px 20px 40px;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:20px}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+  #plotwrap{position:relative;width:100%;aspect-ratio:4/3;min-height:320px}
+  canvas{width:100%;height:100%;display:block;border-radius:6px;touch-action:none}
+  label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin:14px 0 4px}
+  select{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:#fff}
+  input[type=range]{width:100%}
+  .val{font-variant-numeric:tabular-nums;font-weight:600}
+  button{font:inherit;font-size:.88rem;padding:8px 11px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer}
+  button:hover{background:#f3f1ec}
+  button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  button.primary:hover{background:#3a4048}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .check{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.9rem}
+  .check input{width:auto} .check label{margin:0;font-weight:500;color:var(--ink)}
+  #status{margin-top:14px;padding:12px 14px;border-radius:8px;font-family:"Source Serif 4",Georgia,serif;font-size:1.02rem;background:#f6f4ef;border:1px solid var(--line)}
+  .line{display:flex;justify-content:space-between;gap:8px}
+  .ok{color:var(--good);font-weight:600} .no{color:var(--bad);font-weight:600}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted);margin-top:10px}
+  .sw{display:inline-block;width:14px;height:3px;vertical-align:3px;margin-right:5px;border-radius:2px}
+  .box{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+  .hint{font-size:.9rem;color:var(--muted);margin-top:8px}
+  section.explain{max-width:1180px;margin:0 auto;padding:0 20px 50px}
+  section.explain .card{font-family:"Source Serif 4",Georgia,serif;font-size:1.07rem}
+  section.explain h2{font-size:1.3rem;margin:0 0 8px}
+  section.explain ol{padding-left:22px} section.explain li{margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <p class="crumbs"><a href="https://rpennell-math.github.io/">&larr; Home</a> · <a href="./">Interactive Demos</a></p>
+  <h1>The Squeeze Theorem, ε–δ Style</h1>
+  <p class="sub">If <i>f</i> is trapped between two functions that both head to <i>L</i>, then <i>f</i> has nowhere else to go.</p>
+  <div class="defn">
+    Suppose <span class="gc">g(x)</span> ≤ <span class="fc">f(x)</span> ≤ <span class="hc">h(x)</span> for all x near a (except possibly at a), and
+    lim<sub>x→a</sub> <span class="gc">g(x)</span> = lim<sub>x→a</sub> <span class="hc">h(x)</span> = L.
+    Then lim<sub>x→a</sub> <span class="fc">f(x)</span> = L.
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div id="plotwrap"><canvas id="cv"></canvas></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--g)"></span>g (lower)</span>
+      <span><span class="sw" style="background:var(--f)"></span>f (squeezed)</span>
+      <span><span class="sw" style="background:var(--h)"></span>h (upper)</span>
+      <span><span class="box" style="background:rgba(47,111,219,.13);border:1px solid var(--eps)"></span>ε-band</span>
+      <span><span class="box" style="background:rgba(201,131,26,.13);border:1px solid var(--del)"></span>δ-band</span>
+      <span><span class="box" style="background:rgba(123,79,201,.14)"></span>the "trap" between g and h</span>
+    </div>
+    <p class="hint">Drag left/right on the graph to change δ, up/down to change ε. Inside the δ-band, any part of a curve that leaves the ε-band turns <span class="no">red</span>.</p>
+  </div>
+
+  <div class="card">
+    <label for="fn">Example</label>
+    <select id="fn"></select>
+
+    <label>ε = <span class="val e" id="epsv"></span></label>
+    <input type="range" id="eps" min="-3" max="0.2" step="0.005">
+
+    <label>δ = <span class="val d" id="delv"></span></label>
+    <input type="range" id="del" min="-4" max="0.6" step="0.005">
+
+    <div class="btns">
+      <button id="bg">δ for <span class="gc">g</span></button>
+      <button id="bh">δ for <span class="hc">h</span></button>
+      <button class="primary" id="bmin">δ = min(δ<sub>g</sub>, δ<sub>h</sub>)</button>
+    </div>
+    <div class="btns">
+      <button id="play">▶ Squeeze it (shrink ε)</button>
+      <button id="reset">Reset</button>
+    </div>
+    <div class="check"><input type="checkbox" id="zoom"><label for="zoom">Zoom in to the bands</label></div>
+    <div class="check"><input type="checkbox" id="trap" checked><label for="trap">Shade the trap between g and h</label></div>
+
+    <div id="status"></div>
+  </div>
+</main>
+
+<section class="explain">
+  <div class="card">
+    <h2>This example</h2>
+    <div id="about"></div>
+    <h2 style="margin-top:18px">The proof, as a picture</h2>
+    <ol>
+      <li>Someone hands you an <span class="e">ε</span> &gt; 0 (the blue band).</li>
+      <li>Since <span class="gc">g</span> → L, there is a <span class="d">δ<sub>g</sub></span> with L − ε &lt; g(x) &lt; L + ε whenever 0 &lt; |x − a| &lt; δ<sub>g</sub>. Press “δ for g”: <span class="gc">g</span> is all green.</li>
+      <li>Since <span class="hc">h</span> → L, there is a <span class="d">δ<sub>h</sub></span> doing the same for h. Press “δ for h”.</li>
+      <li>Let <span class="d">δ = min(δ<sub>g</sub>, δ<sub>h</sub>)</span>. Inside that band <em>both</em> g and h are in the ε-band, so
+        <br>&nbsp;&nbsp;&nbsp;L − ε &lt; g(x) ≤ f(x) ≤ h(x) &lt; L + ε.</li>
+      <li>So |f(x) − L| &lt; ε: <b>f</b> is green too — and we never had to know anything about f except that it’s trapped. That’s the whole theorem.</li>
+    </ol>
+    <p>Things to try: press “δ for g” alone on the first example and notice h (and f) can still escape. Then use the min. Or hit “Squeeze it” and watch the bands shrink while f stays caught.</p>
+  </div>
+</section>
+
+<script>
+const EX = [
+  { name:"x² sin(1/x) between −x² and x²,  x → 0",
+    g:x=>-x*x, f:x=>x*x*Math.sin(1/x), h:x=>x*x, a:0, L:0, view:[-1.2,1.2,-1,1],
+    about:"Since −1 ≤ sin(1/x) ≤ 1, multiplying by x² ≥ 0 gives −x² ≤ x² sin(1/x) ≤ x². Both bounds go to 0, so f does too — even though f wiggles infinitely often near 0 and we can’t compute its limit directly." },
+  { name:"x sin(1/x) between −|x| and |x|,  x → 0",
+    g:x=>-Math.abs(x), f:x=>x*Math.sin(1/x), h:x=>Math.abs(x), a:0, L:0, view:[-0.8,0.8,-0.7,0.7],
+    about:"|x sin(1/x)| ≤ |x|, so −|x| ≤ x sin(1/x) ≤ |x|. Here the trap is a wedge, and δ = ε works for both sides." },
+  { name:"sin(x)/x between cos x and 1,  x → 0",
+    g:x=>Math.cos(x), f:x=>Math.sin(x)/x, h:x=>1, a:0, L:1, view:[-3,3,-0.3,1.4],
+    about:"The classic geometric argument with the unit circle gives cos x ≤ sin(x)/x ≤ 1 for 0 &lt; |x| &lt; π/2. Since cos x → 1, the squeeze theorem gives lim sin(x)/x = 1 — the limit behind the derivative of sine." },
+  { name:"1 + (x−1)² cos(3/(x−1)) between 1 ± (x−1)²,  x → 1",
+    g:x=>1-(x-1)**2, f:x=>1+(x-1)**2*Math.cos(3/(x-1)), h:x=>1+(x-1)**2, a:1, L:1, view:[-0.2,2.2,-0.1,2.1],
+    about:"The same idea shifted: the cosine factor is bounded between −1 and 1, and (x − 1)² → 0, so f is squeezed to 1." },
+  { name:"Bounds that don’t agree: sin(1/x) between −1 and 1",
+    g:x=>-1+0*x, f:x=>Math.sin(1/x), h:x=>1+0*x, a:0, L:0, view:[-0.6,0.6,-1.4,1.4], fails:true,
+    about:"Here −1 ≤ sin(1/x) ≤ 1, but the bounds go to −1 and 1, not to a common L. The squeeze theorem says nothing — and in fact sin(1/x) has no limit. Try to find δ for g or h with small ε: impossible, because the claimed L = 0 is wrong for both bounds. The hypotheses matter!" }
+];
+
+const $=id=>document.getElementById(id);
+const cv=$("cv"), ctx=cv.getContext("2d");
+let ex, eps, del, dG=null, dH=null, playing=false, raf=null;
+
+EX.forEach((E,i)=>{const o=document.createElement("option");o.value=i;o.textContent=E.name;$("fn").appendChild(o);});
+
+const fmt=v=>v===null?"—":(Math.abs(v)>=0.01||v===0)?(v.toFixed(3).replace(/\.?0+$/,"")||"0"):v.toExponential(2);
+function setEps(v){eps=Math.max(1e-5,v);$("eps").value=Math.log10(eps);$("epsv").textContent=fmt(eps);}
+function setDel(v){del=Math.max(1e-7,v);$("del").value=Math.log10(del);$("delv").textContent=fmt(del);}
+
+function maxDev(F,d,N=1200){
+  let m=0;const a=ex.a,L=ex.L;
+  const t=x=>{const y=F(x);if(isFinite(y)){const v=Math.abs(y-L);if(v>m)m=v;}};
+  for(let k=1;k<N;k++){const s=d*k/N;t(a+s);t(a-s);}
+  for(let k=0;k<N/3;k++){const s=d*Math.pow(0.97,k)*0.999;t(a+s);t(a-s);}
+  return m;
+}
+function findDelta(F,N){
+  const v=ex.view, dmax=Math.max(v[1]-ex.a,ex.a-v[0]);
+  if(maxDev(F,dmax,N)<eps) return dmax*0.98;
+  let lo=0,hi=dmax;
+  for(let i=0;i<40;i++){const mid=(lo+hi)/2; if(maxDev(F,mid,N)<eps)lo=mid; else hi=mid;}
+  return lo>1e-7?lo*0.98:0;
+}
+
+function load(i){
+  stop(); ex=EX[i]; dG=dH=null;
+  setEps((ex.view[3]-ex.view[2])/5);
+  setDel((ex.view[1]-ex.view[0])/4);
+  $("about").innerHTML=ex.about;
+  draw();
+}
+
+function view(){
+  if(!$("zoom").checked) return ex.view;
+  const hx=Math.max(del*2.2,1e-6), hy=Math.max(eps*2.6,1e-6);
+  return [ex.a-hx,ex.a+hx,ex.L-hy,ex.L+hy];
+}
+function niceStep(r){const raw=r/8,p=Math.pow(10,Math.floor(Math.log10(raw))),n=raw/p;return(n<1.5?1:n<3.5?2:n<7.5?5:10)*p;}
+
+function draw(){
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  const [x0,x1,y0,y1]=view(), a=ex.a, L=ex.L;
+  const X=x=>(x-x0)/(x1-x0)*W, Y=y=>H-(y-y0)/(y1-y0)*H;
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
+
+  // grid
+  ctx.font="11px Inter, sans-serif";ctx.fillStyle="#8a9098";
+  const sx=niceStep(x1-x0),sy=niceStep(y1-y0);
+  ctx.strokeStyle="#f0ede7";ctx.lineWidth=1;
+  for(let gx=Math.ceil(x0/sx)*sx;gx<=x1;gx+=sx){ctx.beginPath();ctx.moveTo(X(gx),0);ctx.lineTo(X(gx),H);ctx.stroke();}
+  for(let gy=Math.ceil(y0/sy)*sy;gy<=y1;gy+=sy){ctx.beginPath();ctx.moveTo(0,Y(gy));ctx.lineTo(W,Y(gy));ctx.stroke();}
+  ctx.strokeStyle="#b9bec5";ctx.lineWidth=1.2;
+  const ax=Math.min(Math.max(Y(0),0),H),ay=Math.min(Math.max(X(0),0),W);
+  ctx.beginPath();ctx.moveTo(0,ax);ctx.lineTo(W,ax);ctx.moveTo(ay,0);ctx.lineTo(ay,H);ctx.stroke();
+  for(let gx=Math.ceil(x0/sx)*sx;gx<=x1;gx+=sx){if(Math.abs(gx)<sx/1e6)continue;ctx.fillText(+gx.toPrecision(6)+"",X(gx)+3,Math.min(ax+13,H-4));}
+  for(let gy=Math.ceil(y0/sy)*sy;gy<=y1;gy+=sy){if(Math.abs(gy)<sy/1e6)continue;ctx.fillText(+gy.toPrecision(6)+"",Math.min(ay+4,W-40),Y(gy)-3);}
+
+  // trap shading between g and h
+  if($("trap").checked){
+    ctx.fillStyle="rgba(123,79,201,.10)";
+    const n=Math.ceil(W*1.5);
+    for(let i=0;i<n;i++){
+      const xa=x0+(x1-x0)*i/n, xb=x0+(x1-x0)*(i+1)/n, xm=(xa+xb)/2;
+      const lo=ex.g(xm), hi=ex.h(xm); if(!isFinite(lo)||!isFinite(hi))continue;
+      ctx.fillRect(X(xa),Y(hi),X(xb)-X(xa)+0.5,Y(lo)-Y(hi));
+    }
+  }
+
+  // bands
+  ctx.fillStyle="rgba(47,111,219,.12)";ctx.fillRect(0,Y(L+eps),W,Y(L-eps)-Y(L+eps));
+  ctx.fillStyle="rgba(201,131,26,.13)";ctx.fillRect(X(a-del),0,X(a+del)-X(a-del),H);
+  ctx.setLineDash([6,5]);ctx.lineWidth=1.3;
+  ctx.strokeStyle="#2f6fdb";[L+eps,L-eps].forEach(y=>{ctx.beginPath();ctx.moveTo(0,Y(y));ctx.lineTo(W,Y(y));ctx.stroke();});
+  ctx.strokeStyle="#c9831a";[a+del,a-del].forEach(x=>{ctx.beginPath();ctx.moveTo(X(x),0);ctx.lineTo(X(x),H);ctx.stroke();});
+  ctx.setLineDash([]);
+  ctx.font="600 12px Inter, sans-serif";
+  ctx.fillStyle="#2f6fdb";ctx.fillText("L + ε",6,Y(L+eps)-4);ctx.fillText("L − ε",6,Y(L-eps)+14);
+  ctx.fillStyle="#c9831a";ctx.fillText("a − δ",X(a-del)-38,14);ctx.fillText("a + δ",X(a+del)+4,14);
+
+  // curves
+  const curve=(F,base,w)=>{
+    const steps=W*4, jt=(y1-y0)*0.6; let p=null;
+    ctx.lineWidth=w;ctx.lineCap="round";
+    for(let i=0;i<=steps;i++){
+      const x=x0+(x1-x0)*i/steps, y=F(x);
+      if(!isFinite(y)){p=null;continue;}
+      if(p&&Math.abs(y-p.y)<jt){
+        const mx=(x+p.x)/2,my=(y+p.y)/2,inD=Math.abs(mx-a)<del;
+        ctx.strokeStyle=!inD?base:(Math.abs(my-L)<eps?"#1a8a4a":"#d23a2e");
+        ctx.globalAlpha=inD?1:0.85;
+        ctx.beginPath();ctx.moveTo(X(p.x),Y(p.y));ctx.lineTo(X(x),Y(y));ctx.stroke();
+      }
+      p={x,y};
+    }
+    ctx.globalAlpha=1;
+  };
+  curve(ex.g,"#7b4fc9",2.6);
+  curve(ex.h,"#0e8f8f",2.6);
+  curve(ex.f,"#1f2328",1.8);
+
+  // the point (a, L)
+  ctx.fillStyle="#fff";ctx.strokeStyle="#1f2328";ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.arc(X(a),Y(L),5,0,2*Math.PI);ctx.fill();ctx.stroke();
+
+  // curve name tags at right edge
+  ctx.font="600 13px Inter, sans-serif";
+  const tag=(F,txt,col)=>{const xr=x0+(x1-x0)*0.96,y=F(xr);if(isFinite(y)&&y>y0&&y<y1){ctx.fillStyle=col;ctx.fillText(txt,X(xr)-4,Y(y)-6);}};
+  tag(ex.g,"g","#7b4fc9");tag(ex.h,"h","#0e8f8f");
+
+  status();
+}
+
+function status(){
+  const N=700;
+  const okG=maxDev(ex.g,del,N)<eps, okH=maxDev(ex.h,del,N)<eps, okF=maxDev(ex.f,del,N)<eps;
+  const mark=b=>b?'<span class="ok">✔ stays in band</span>':'<span class="no">✘ escapes</span>';
+  let msg=`<div class="line"><span class="gc">g</span>${mark(okG)}</div>
+           <div class="line"><span class="hc">h</span>${mark(okH)}</div>
+           <div class="line"><span class="fc">f</span>${mark(okF)}</div>
+           <div style="margin-top:8px;font-size:.93rem">δ<sub>g</sub> = ${fmt(dG)}, &nbsp;δ<sub>h</sub> = ${fmt(dH)}</div>`;
+  if(okG&&okH) msg+=`<div style="margin-top:8px">Both bounds are trapped in the ε-band, so L − ε &lt; g ≤ f ≤ h &lt; L + ε: <b>f has to be in the band too.</b></div>`;
+  else if(okF) msg+=`<div style="margin-top:8px;color:var(--muted);font-size:.93rem">f happens to fit here, but the squeeze argument needs <em>both</em> g and h in the band to guarantee it.</div>`;
+  $("status").innerHTML=msg;
+}
+
+function doMin(N){
+  dG=findDelta(ex.g,N); dH=findDelta(ex.h,N);
+  const d=Math.min(dG,dH);
+  if(d>0) setDel(d);
+  return d;
+}
+
+function stop(){playing=false;cancelAnimationFrame(raf);$("play").textContent="▶ Squeeze it (shrink ε)";}
+function step(){
+  if(!playing)return;
+  setEps(eps*0.985);
+  const d=doMin(250);
+  draw();
+  if(eps<=0.0012||d<=0){stop();return;}
+  raf=requestAnimationFrame(step);
+}
+
+$("fn").onchange=e=>load(+e.target.value);
+$("eps").oninput=e=>{setEps(Math.pow(10,+e.target.value));draw();};
+$("del").oninput=e=>{setDel(Math.pow(10,+e.target.value));draw();};
+$("bg").onclick=()=>{dG=findDelta(ex.g);if(dG>0)setDel(dG);draw();if(!(dG>0))noDelta("g");};
+$("bh").onclick=()=>{dH=findDelta(ex.h);if(dH>0)setDel(dH);draw();if(!(dH>0))noDelta("h");};
+$("bmin").onclick=()=>{const d=doMin();draw();if(!(d>0))noDelta(dG>0?"h":"g");};
+$("play").onclick=()=>{ if(playing){stop();return;} playing=true; $("zoom").checked=true; $("play").textContent="⏸ Pause"; step(); };
+$("reset").onclick=()=>{$("zoom").checked=false;load(+$("fn").value);};
+$("zoom").onchange=draw; $("trap").onchange=draw;
+function noDelta(which){
+  $("status").innerHTML+=`<div class="no" style="margin-top:8px">No δ works for ${which} with ε = ${fmt(eps)}: ${which} doesn’t approach L = ${fmt(ex.L)}. The squeeze theorem’s hypothesis fails.</div>`;
+}
+
+let drag=null;
+cv.addEventListener("pointerdown",e=>{stop();drag={x:e.clientX,y:e.clientY,d:del,e:eps};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener("pointermove",e=>{if(!drag)return;setDel(drag.d*Math.pow(10,(e.clientX-drag.x)/250));setEps(drag.e*Math.pow(10,-(e.clientY-drag.y)/250));draw();});
+cv.addEventListener("pointerup",()=>drag=null);
+window.addEventListener("resize",draw);
+
+load(0);
+</script>
+</body>
+</html>
