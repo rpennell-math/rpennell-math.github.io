@@ -1,0 +1,228 @@
+\documentclass[11pt]{amsart}
+
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{xcolor}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{question}[theorem]{Question}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\DeclareMathOperator{\trdeg}{trdeg}
+
+\title[Is $\pi^{\pi^{\pi^{\pi}}}$ an integer?]{Is $\pi^{\pi^{\pi^{\pi}}}$ an Integer?\\ On an Open Problem at the Edge of Computation and Transcendence Theory}
+
+\author{Ryan Pennell}
+\address{Ivy Tech Community College, Bloomington, Indiana}
+
+\date{November 17, 2026}
+
+\begin{document}
+
+\begin{abstract}
+It is not known whether $\pi^{\pi^{\pi^{\pi}}}$ is an integer. We survey why this innocent-looking question is out of reach. On the computational side, we show that deciding it numerically would require roughly $6.66\times10^{17}$ correct decimal digits of $\pi$, more than two thousand times the current record. On the theoretical side, the classical transcendence results of Lindemann, Gelfond, Schneider, and Baker require an algebraic base or exponent and say nothing about $\pi^{\pi}$, let alone higher terms of the tower. We record two positive statements: an elementary proof that no two consecutive terms of the tower are rational, and a proof that Schanuel's conjecture implies that every term of the tower is transcendental.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Define the \emph{power tower of $\pi$} by
+\[
+t_0 = 1, \qquad t_{n+1} = \pi^{t_n} \quad (n \ge 0),
+\]
+so that $t_1 = \pi$, $t_2 = \pi^{\pi}$, $t_3 = \pi^{\pi^{\pi}}$, and $t_4 = \pi^{\pi^{\pi^{\pi}}}$. As usual, towers are evaluated from the top down: $\pi^{\pi^{\pi}} = \pi^{(\pi^{\pi})}$.
+
+\begin{question}\label{q:main}
+Is $t_4 = \pi^{\pi^{\pi^{\pi}}}$ an integer?
+\end{question}
+
+Essentially everyone expects the answer to be no; indeed one expects $t_4$ to be transcendental. Yet no proof is known, and the question is recorded as open in the On-Line Encyclopedia of Integer Sequences~\cite{oeis}. It reached a wide audience in 2021 through a video by Matt Parker~\cite{parker}, and has since been discussed in the popular press~\cite{sciam}.
+
+The question is striking because it appears to be a matter of arithmetic. For $t_3$ it is: a short high-precision computation shows that $t_3$ is not an integer (Section~\ref{sec:values}). For $t_4$, both of the usual routes are blocked. Computation fails because of the size of the number (Section~\ref{sec:computation}), and theory fails because the available transcendence results do not apply to a transcendental base raised to a transcendental exponent (Section~\ref{sec:theory}). In Section~\ref{sec:positive} we prove what can be proved with present tools.
+
+\section{The first few terms}\label{sec:values}
+
+Table~\ref{tab:values} lists the first four terms. The values of $t_2$ and $t_3$ were computed with the \texttt{mpmath} library at $60$ significant digits; the leading digits and exponent of $t_4$ agree with~\cite{oeis}.
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lll}
+\hline
+Term & Expression & Value \\
+\hline
+$t_1$ & $\pi$ & $3.14159\,26535\ldots$ \\
+$t_2$ & $\pi^{\pi}$ & $36.46215\,96072\,07911\ldots$ \\
+$t_3$ & $\pi^{\pi^{\pi}}$ & $1\,340\,164\,183\,006\,357\,435.29744\,91296\ldots$ \\
+$t_4$ & $\pi^{\pi^{\pi^{\pi}}}$ & $9.08022\,24553\ldots \times 10^{666\,262\,452\,970\,848\,503}$ \\
+\hline
+\end{tabular}
+\caption{The first terms of the power tower of $\pi$.}
+\label{tab:values}
+\end{table}
+
+In particular $t_3$ has fractional part $0.2974\ldots$, so $t_3 \notin \mathbb{Z}$. The integer part of $t_4$ has
+\[
+\lfloor t_3 \log_{10}\pi \rfloor + 1 = 666\,262\,452\,970\,848\,504 \approx 6.66 \times 10^{17}
+\]
+decimal digits. Its leading digits are easy to obtain, since they depend only on the fractional part of $t_3\log_{10}\pi$, which requires only about $20$ more digits of precision than $t_3$ itself. The difficulty lies entirely at the other end of the number.
+
+\section{Why computation fails}\label{sec:computation}
+
+To decide Question~\ref{q:main} numerically, one would need an approximation $\tilde t_4$ with $|t_4 - \tilde t_4| < \tfrac12$, together with a proof that $\tilde t_4$ is not within that distance of an integer. The following estimate shows how much of $\pi$ this requires.
+
+\begin{lemma}\label{lem:sensitivity}
+Let $F(x) = x^{x^{x^{x}}}$ for $x > 1$. Then
+\[
+F'(\pi) = t_4 \cdot D, \qquad\text{where}\qquad D = \frac{d}{dx}\Bigl(x^{x^{x}} \ln x\Bigr)\Big|_{x=\pi} \approx 1.556 \times 10^{20}.
+\]
+Consequently, if $\tilde\pi$ approximates $\pi$ with $|\pi - \tilde\pi| = \delta$, then $|F(\pi) - F(\tilde\pi)| \approx t_4 D \delta$ for small $\delta$, and an error below $1$ requires
+\[
+\delta \lesssim 10^{-(666\,262\,452\,970\,848\,503 + 21)}.
+\]
+\end{lemma}
+
+\begin{proof}
+Write $F(x) = \exp\bigl(x^{x^{x}} \ln x\bigr)$ and differentiate; the value of $D$ was computed numerically. The final statement follows from $t_4 \approx 10^{6.66\times10^{17}}$ and $\log_{10} D \approx 20.19$.
+\end{proof}
+
+Thus deciding Question~\ref{q:main} by direct computation requires about $6.66\times 10^{17}$ correct decimal digits of $\pi$, and all subsequent arithmetic must be carried out at the same precision. For comparison, the largest computation of $\pi$ to date produced $314$ trillion ($3.14\times10^{14}$) digits, completed by StorageReview in late 2025 after a $110$-day run~\cite{livescience}. The required precision exceeds this by a factor of roughly $2{,}100$. Merely storing $6.66\times10^{17}$ decimal digits in binary takes about $2.8\times 10^{17}$ bytes, or $280$ petabytes, before any multiplication is performed.
+
+\begin{remark}
+Even an eventual computation would not end the matter. The integer part of $t_5$ has about $0.497\, t_4$ digits, a number which itself has about $6.66\times10^{17}$ digits. Computation can therefore settle at most finitely many cases of the general question of whether some $t_n$ is an integer.
+\end{remark}
+
+\section{Why theory fails}\label{sec:theory}
+
+The classical results on transcendence are the following.
+
+\begin{theorem}[Lindemann, 1882~\cite{lindemann}]
+$\pi$ is transcendental.
+\end{theorem}
+
+\begin{theorem}[Gelfond--Schneider, 1934~\cite{gelfond,schneider}]\label{thm:gs}
+If $a$ and $b$ are algebraic numbers with $a \ne 0, 1$ and $b \notin \Q$, then every value of $a^{b}$ is transcendental.
+\end{theorem}
+
+Theorem~\ref{thm:gs} gives the transcendence of $2^{\sqrt2}$ and, since $e^{\pi} = (-1)^{-i}$, of Gelfond's constant $e^{\pi}$. Baker's theorem on linear forms in logarithms~\cite{baker} vastly extends Theorem~\ref{thm:gs}, but it too concerns logarithms of \emph{algebraic} numbers.
+
+All of these results require the base, the exponent, or both to be algebraic. For $t_2 = \pi^{\pi}$ the base and exponent are both transcendental, and the theorems are silent. Consequently the following is open.
+
+\begin{question}
+Is $\pi^{\pi}$ irrational?
+\end{question}
+
+The same is true of $e^{e}$ and $\pi^{e}$~\cite{proofwiki}. Since we cannot show that $t_2$ is irrational, there is little hope of saying anything directly about $t_4$.
+
+The expected answer is supplied by the central conjecture of the subject.
+
+\begin{conjecture}[Schanuel, 1960s~\cite{lang}]\label{conj:schanuel}
+If $z_1, \ldots, z_n \in \C$ are linearly independent over $\Q$, then
+\[
+\trdeg_{\Q} \Q(z_1, \ldots, z_n, e^{z_1}, \ldots, e^{z_n}) \ge n.
+\]
+\end{conjecture}
+
+Schanuel's conjecture implies, among many other things, that $e$ and $\pi$ are algebraically independent, so that $e+\pi$ and $e\pi$ are transcendental. In Section~\ref{sec:positive} we show it also settles Question~\ref{q:main}.
+
+\section{What can be proved}\label{sec:positive}
+
+\subsection{An unconditional result}
+
+\begin{proposition}\label{prop:consecutive}
+For every $n \ge 1$, the numbers $t_n$ and $t_{n+1}$ are not both rational.
+\end{proposition}
+
+\begin{proof}
+Every $t_n$ is positive. Suppose $t_n = p/q$ with $p, q$ positive integers and $t_{n+1} = r \in \Q$. Then $\pi^{p/q} = r$, so $\pi^{p} = r^{q}$. Hence $\pi$ is a root of the nonzero polynomial $x^{p} - r^{q} \in \Q[x]$, contradicting Lindemann's theorem.
+\end{proof}
+
+\begin{corollary}
+At least one of $\pi^{\pi}$ and $\pi^{\pi^{\pi}}$ is irrational, and at least one of $\pi^{\pi^{\pi}}$ and $\pi^{\pi^{\pi^{\pi}}}$ is irrational. In particular, if $\pi^{\pi^{\pi^{\pi}}}$ were an integer, then $\pi^{\pi^{\pi}}$ would be irrational.
+\end{corollary}
+
+\begin{remark}
+The argument does not extend to algebraic terms. If $t_n = a$ is algebraic and irrational and $t_{n+1} = b$ is algebraic, then $\pi = b^{1/a}$, and Theorem~\ref{thm:gs} merely confirms that $b^{1/a}$ is transcendental. No contradiction arises, and we do not know how to rule out two consecutive algebraic terms.
+\end{remark}
+
+\subsection{A conditional result}
+
+\begin{theorem}\label{thm:schanuel-tower}
+Assume Conjecture~\ref{conj:schanuel}. Then for every $n \ge 0$ the numbers
+\[
+\ln \pi,\ t_1,\ t_2,\ \ldots,\ t_{n+1}
+\]
+are algebraically independent over $\Q$. In particular every $t_n$ with $n\ge1$ is transcendental, and $\pi^{\pi^{\pi^{\pi}}}$ is not an integer.
+\end{theorem}
+
+\begin{proof}
+We argue by induction on $n$. For $n \ge 0$ consider the $n+2$ numbers
+\[
+z_{-1} = i\pi, \qquad z_k = t_k \ln\pi \quad (0 \le k \le n),
+\]
+whose exponentials are $e^{z_{-1}} = -1$ and $e^{z_k} = \pi^{t_k} = t_{k+1}$.
+
+\emph{Linear independence.} Suppose $a\, i\pi + \sum_{k=0}^{n} b_k t_k \ln \pi = 0$ with $a, b_k \in \Q$. Taking imaginary parts gives $a = 0$, and since $\ln\pi \neq 0$ we get $\sum_{k=0}^{n} b_k t_k = 0$. For $n = 0$ this reads $b_0 = 0$. For $n \ge 1$, the induction hypothesis says that $t_1, \ldots, t_n$ are algebraically independent; since $t_0 = 1$, the relation is a polynomial relation among them, so all $b_k = 0$.
+
+\emph{Applying the conjecture.} By Conjecture~\ref{conj:schanuel},
+\[
+\trdeg_{\Q} \Q\bigl(i\pi,\ t_0\ln\pi, \ldots, t_n\ln\pi,\ -1,\ t_1, \ldots, t_{n+1}\bigr) \ge n+2.
+\]
+This field is contained in $\Q\bigl(i, \ln\pi, t_1, \ldots, t_{n+1}\bigr)$, which is algebraic over $\Q(\ln\pi, t_1, \ldots, t_{n+1})$. The latter is generated by $n+2$ elements, so its transcendence degree is at most $n+2$, with equality exactly when those generators are algebraically independent. This proves the claim for $n$ and completes the induction.
+\end{proof}
+
+\begin{remark}
+The case $n = 0$ is the familiar statement that Schanuel's conjecture implies that $\pi$ and $\ln \pi$ are algebraically independent.
+\end{remark}
+
+\section{Concluding remarks}
+
+Question~\ref{q:main} is unlikely to be important for its own sake. Its interest lies in what it exposes: a number that can be written in a handful of symbols sits beyond the reach of both computation and current theory. The gap between the two is wide. Computation can certify that $t_3$ is not an integer but will not reach $t_4$ in the foreseeable future, while theory can say something about pairs of consecutive terms but cannot yet decide whether $t_2$ is rational. Closing that gap for the tower of $\pi$ would appear to require genuinely new ideas in transcendence theory, of the kind that would also bring Schanuel's conjecture closer.
+
+\begin{thebibliography}{99}
+
+\bibitem{baker}
+A.~Baker, \emph{Linear forms in the logarithms of algebraic numbers.~I}, Mathematika \textbf{13} (1966), 204--216.
+
+\bibitem{gelfond}
+A.~O.~Gelfond, \emph{Sur le septi\`eme probl\`eme de Hilbert}, Izv.\ Akad.\ Nauk SSSR \textbf{7} (1934), 623--630.
+
+\bibitem{lang}
+S.~Lang, \emph{Introduction to Transcendental Numbers}, Addison-Wesley, Reading, MA, 1966.
+
+\bibitem{lindemann}
+F.~Lindemann, \emph{\"Uber die Zahl $\pi$}, Math.\ Ann.\ \textbf{20} (1882), 213--225.
+
+\bibitem{livescience}
+\emph{Pi has been calculated to trillions of digits---is that completely irrational?}, Live Science, 2025. \url{https://www.livescience.com/physics-mathematics/mathematics/pi-has-been-calculated-to-trillions-of-digits-is-that-completely-irrational}
+
+\bibitem{oeis}
+OEIS Foundation Inc., \emph{Decimal expansion of $\pi^{\pi^{\pi^{\pi}}}$}, Entry A202955 in The On-Line Encyclopedia of Integer Sequences. \url{https://oeis.org/A202955}
+
+\bibitem{parker}
+M.~Parker, \emph{Why $\pi^{\pi^{\pi^{\pi}}}$ could be an integer (for all we know!)}, Stand-up Maths (video), February 2021.
+
+\bibitem{proofwiki}
+ProofWiki, \emph{Is Pi to the power of Euler's Number Rational?} \url{https://proofwiki.org/wiki/Is_Pi_to_the_power_of_Euler\%27s_Number_Rational\%3F}
+
+\bibitem{schneider}
+T.~Schneider, \emph{Transzendenzuntersuchungen periodischer Funktionen.~I}, J.\ Reine Angew.\ Math.\ \textbf{172} (1935), 65--69.
+
+\bibitem{sciam}
+\emph{A wild claim about the powers of pi creates a transcendental mystery}, Scientific American. \url{https://www.scientificamerican.com/article/a-wild-claim-about-the-powers-of-pi-creates-a-transcendental-mystery/}
+
+\end{thebibliography}
+
+\end{document}
