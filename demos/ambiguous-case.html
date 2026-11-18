@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ambiguous Case (SSA) · Interactive Demos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2328; --muted:#5b6370; --line:#d9dde3; --bg:#fbfaf7; --card:#ffffff;
+    --t1:#2160d6; --t1fill:rgba(33,96,214,.14);
+    --t2:#d4560f; --t2fill:rgba(212,86,15,.14);
+    --circle:#7a4bc2; --bad:#9aa1ab; --good:#1d7a46; --warn:#b42318;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
+  header{max-width:1180px;margin:0 auto;padding:28px 20px 8px}
+  h1{font:600 1.9rem/1.2 "Source Serif 4",Georgia,serif;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0;max-width:760px}
+  .var{font-family:"Source Serif 4",Georgia,serif;font-style:italic}
+  main{max-width:1180px;margin:0 auto;padding:16px 20px 40px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:20px}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h2{font:600 1.05rem/1.3 Inter,sans-serif;margin:0 0 10px;letter-spacing:.01em}
+  svg{width:100%;height:auto;display:block;background:#fff;border-radius:8px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.85rem;color:var(--muted);margin-top:8px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .controls{display:grid;gap:14px;margin-top:14px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:.95rem}
+  .ctl output{font-variant-numeric:tabular-nums;font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--t1)}
+  .hint{font-size:.8rem;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;gap:8px}
+  button{font:500 .88rem Inter,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 11px;border-radius:8px;cursor:pointer}
+  button:hover{border-color:#aab1bb;background:#f5f6f8}
+  button.primary{background:var(--circle);border-color:var(--circle);color:#fff}
+  button.primary:hover{background:#6a3db0}
+  .verdict{font:600 1.35rem/1.2 "Source Serif 4",Georgia,serif;margin:2px 0 10px}
+  .v0{color:var(--warn)} .v1{color:var(--t1)} .v2{color:var(--t2)}
+  .work{font-family:"Source Serif 4",Georgia,serif;font-size:1.08rem;line-height:1.75}
+  .work .step{margin:0 0 6px}
+  .work .eq{display:block;padding-left:14px}
+  .ok{color:var(--good);font-weight:600;font-family:Inter,sans-serif;font-size:.9rem}
+  .no{color:var(--warn);font-weight:600;font-family:Inter,sans-serif;font-size:.9rem}
+  .explain{background:#f6f4ef;border-radius:8px;padding:10px 12px;margin-top:10px;font-size:.95rem}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;margin-top:6px;font-size:.95rem}
+  th,td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{font-weight:600;color:var(--muted);font-size:.82rem}
+  .tag1{color:var(--t1);font-weight:600} .tag2{color:var(--t2);font-weight:600}
+  .try{margin:0;padding-left:20px;font-size:.93rem}
+  .try li{margin-bottom:4px}
+  .full{grid-column:1/-1}
+  .crumbs{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+  .crumbs a{color:#006648;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <p class="crumbs"><a href="https://rpennell-math.github.io/">&larr; Home</a> · <a href="./">Interactive Demos</a></p>
+  <h1>The Ambiguous Case: why SSA can give 0, 1, or 2 triangles</h1>
+  <p class="sub">You're given angle <span class="var">A</span>, the side <span class="var">a</span> across from it, and another side <span class="var">b</span>. Side <span class="var">b</span> is fixed in place, so side <span class="var">a</span> has to <em>swing</em> from vertex <span class="var">C</span> until it hits the bottom side. Count how many places it can land.</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>The picture</h2>
+    <svg id="fig" viewBox="0 0 760 460" role="img" aria-label="Triangle diagram for the ambiguous case"></svg>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--t1)"></i>Triangle 1</span>
+      <span><i class="sw" style="background:var(--t2)"></i>Triangle 2</span>
+      <span><i class="sw" style="border:2px dashed var(--circle);background:#fff"></i>Every place side <span class="var">a</span> can reach</span>
+      <span><i class="sw" style="background:#59616c;height:3px"></i>Point <span class="var">B</span> must land on this ray</span>
+      <span><i class="sw" style="border:2px solid var(--bad);background:#fff;border-radius:50%"></i>Lands behind <span class="var">A</span> (doesn't count)</span>
+    </div>
+
+    <div class="controls">
+      <div class="ctl">
+        <label for="sA"><span>Angle <span class="var">A</span></span><output id="oA"></output></label>
+        <input id="sA" type="range" min="5" max="170" step="1" value="35">
+      </div>
+      <div class="ctl">
+        <label for="sb"><span>Side <span class="var">b</span> (fixed side next to <span class="var">A</span>)</span><output id="ob"></output></label>
+        <input id="sb" type="range" min="2" max="10" step="0.1" value="8">
+      </div>
+      <div class="ctl">
+        <label for="sa"><span>Side <span class="var">a</span> (the swinging side)</span><output id="oa"></output></label>
+        <input id="sa" type="range" min="0.5" max="12" step="0.1" value="6">
+        <div class="hint">Tip: click a slider, then use the arrow keys for small steps.</div>
+      </div>
+      <div>
+        <div class="row" style="margin-bottom:8px">
+          <button class="primary" id="swing">▶ Swing side a</button>
+        </div>
+        <div class="row" id="presets"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>The Law of Sines work</h2>
+    <div class="verdict" id="verdict"></div>
+    <div class="work" id="work"></div>
+    <div class="explain" id="explain"></div>
+    <div id="tablewrap"></div>
+  </section>
+
+  <section class="card full">
+    <h2>Things to try</h2>
+    <ol class="try">
+      <li>Start at <b>Two triangles</b>. Slowly drag <span class="var">a</span> down. Watch the two landing spots move toward each other. What happens right when they meet?</li>
+      <li>Keep dragging <span class="var">a</span> down past that point. What does <span class="var">sin B</span> do? Why can't there be a triangle?</li>
+      <li>Go back to two triangles and drag <span class="var">a</span> <em>up</em> until it's longer than <span class="var">b</span>. Where does the second landing spot go?</li>
+      <li>Make angle <span class="var">A</span> obtuse (over 90°). Can you ever get two triangles? Why not?</li>
+      <li>In the two-triangle case, compare <span class="var">B</span><sub>1</sub> and <span class="var">B</span><sub>2</sub>. What do they always add up to?</li>
+    </ol>
+  </section>
+</main>
+
+<script>
+(function(){
+  const D = Math.PI/180, EPS = 1e-9;
+  const $ = id => document.getElementById(id);
+  const sA=$('sA'), sa=$('sa'), sb=$('sb'), svg=$('fig');
+  const W=760, H=460, PAD=46;
+  let swingPhi = null, anim = null;
+
+  const presets = [
+    {label:'No triangle',              A:35,  b:8, a:3},
+    {label:'One right triangle',       A:30,  b:8, a:4},
+    {label:'Two triangles',            A:35,  b:8, a:6},
+    {label:'One triangle (a > b)',     A:35,  b:6, a:8},
+    {label:'Obtuse A, no triangle',    A:115, b:6, a:5},
+    {label:'Obtuse A, one triangle',   A:115, b:5, a:8},
+  ];
+  presets.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.textContent=p.label;
+    btn.onclick=()=>{stopSwing(); sA.value=p.A; sb.value=p.b; sa.value=p.a; render();};
+    $('presets').appendChild(btn);
+  });
+
+  const f = (x,n=2)=> (Math.abs(x)<5e-13?0:x).toFixed(n);
+  const ang = x => f(x,1)+'°';
+
+  function solve(A,a,b){
+    const s = b*Math.sin(A*D)/a;
+    const out = {s, tris:[], rejected:null, B1:null, B2:null, kind:''};
+    const make = B => { const C=180-A-B; return {B, C, c: a*Math.sin(C*D)/Math.sin(A*D)}; };
+    if (s > 1+EPS){ out.kind='over'; return out; }
+    if (Math.abs(s-1) <= EPS){
+      out.kind='right'; out.B1=90;
+      if (A+90 < 180-EPS) out.tris.push(make(90)); else out.rejected={which:1,B:90};
+      return out;
+    }
+    const B1 = Math.asin(s)/D, B2 = 180-B1;
+    out.kind='under'; out.B1=B1; out.B2=B2;
+    if (A+B1 < 180-EPS) out.tris.push(make(B1)); else out.rejected={which:1,B:B1};
+    if (A+B2 < 180-EPS) out.tris.push(make(B2)); else out.rejected={which:2,B:B2};
+    return out;
+  }
+
+  function el(tag, attrs, text){
+    const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const k in attrs) e.setAttribute(k,attrs[k]);
+    if(text!=null) e.textContent=text;
+    svg.appendChild(e); return e;
+  }
+
+  function render(){
+    const A=+sA.value, a=+sa.value, b=+sb.value;
+    $('oA').textContent=A+'°'; $('oa').textContent=a.toFixed(1); $('ob').textContent=b.toFixed(1);
+    const sol = solve(A,a,b);
+
+    // ---------- geometry (world coords, y up) ----------
+    const Cw = {x:b*Math.cos(A*D), y:b*Math.sin(A*D)};
+    const disc = a*a - Cw.y*Cw.y;
+    let hits = [];
+    if (disc >= -EPS){
+      const r = Math.sqrt(Math.max(0,disc));
+      const xs = r < 1e-6 ? [Cw.x] : [Cw.x - r, Cw.x + r];
+      hits = xs.map(x=>({x, valid: x > 1e-6}));
+    }
+    // fit view
+    let minX=Math.min(0,Cw.x-a), maxX=Math.max(0,Cw.x+a, 1);
+    let minY=Math.min(0,Cw.y-a), maxY=Cw.y;
+    minY = Math.max(minY, -0.45*(maxX-minX)); // don't waste space far below base
+    const sc = Math.min((W-2*PAD)/(maxX-minX), (H-2*PAD)/(maxY-minY));
+    const ox = (W - sc*(maxX-minX))/2 - sc*minX;
+    const oy = (H - sc*(maxY-minY))/2 + sc*maxY;
+    const P = p => ({x: ox + sc*p.x, y: oy - sc*p.y});
+    const pA=P({x:0,y:0}), pC=P(Cw);
+
+    svg.innerHTML='';
+    // base line: behind A (faint) and the ray (solid)
+    el('line',{x1:0,y1:pA.y,x2:pA.x,y2:pA.y,stroke:'#c9ced6','stroke-width':1.5,'stroke-dasharray':'4 5'});
+    el('line',{x1:pA.x,y1:pA.y,x2:W,y2:pA.y,stroke:'#59616c','stroke-width':2});
+
+    // triangles (hidden while swinging until reached)
+    const reached = x => {
+      if (swingPhi===null) return true;
+      let th = Math.atan2(0 - Cw.y, x - Cw.x)/D; if (th<0) th+=360;
+      return th <= swingPhi + 0.01;
+    };
+    const cols=[['var(--t1)','rgba(33,96,214,.14)'],['var(--t2)','rgba(212,86,15,.14)']];
+    sol.tris.forEach((t,i)=>{
+      if(!reached(t.c)) return;
+      const pB=P({x:t.c,y:0}); const [st,fl]=cols[i];
+      el('polygon',{points:`${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}`,fill:fl,stroke:st,'stroke-width':2.5,'stroke-linejoin':'round'});
+    });
+
+    // circle (swing path)
+    const r=sc*a;
+    if (swingPhi===null){
+      el('circle',{cx:pC.x,cy:pC.y,r,fill:'none',stroke:'var(--circle)','stroke-width':1.6,'stroke-dasharray':'6 6',opacity:.75});
+    } else {
+      const a0=180*D, a1=swingPhi*D;
+      const x0=pC.x+r*Math.cos(a0), y0=pC.y-r*Math.sin(a0);
+      const x1=pC.x+r*Math.cos(a1), y1=pC.y-r*Math.sin(a1);
+      el('path',{d:`M${x0},${y0} A${r},${r} 0 0 0 ${x1},${y1}`,fill:'none',stroke:'var(--circle)','stroke-width':2,'stroke-dasharray':'6 6'});
+      el('line',{x1:pC.x,y1:pC.y,x2:x1,y2:y1,stroke:'var(--circle)','stroke-width':3.5,'stroke-linecap':'round'});
+      el('text',{x:(pC.x+x1)/2+8,y:(pC.y+y1)/2,'font-size':17,fill:'var(--circle)','font-family':'Source Serif 4','font-style':'italic'},'a');
+    }
+
+    // side b
+    el('line',{x1:pA.x,y1:pA.y,x2:pC.x,y2:pC.y,stroke:'#1f2328','stroke-width':3,'stroke-linecap':'round'});
+    const mb={x:(pA.x+pC.x)/2,y:(pA.y+pC.y)/2};
+    el('text',{x:mb.x-16*Math.sin(A*D),y:mb.y-16*Math.cos(A*D)+5,'font-size':18,'font-family':'Source Serif 4','font-style':'italic','text-anchor':'middle'},'b');
+
+    // angle A arc
+    const ra=Math.min(34, 0.35*sc*b);
+    el('path',{d:`M${pA.x+ra},${pA.y} A${ra},${ra} 0 0 0 ${pA.x+ra*Math.cos(A*D)},${pA.y-ra*Math.sin(A*D)}`,fill:'none',stroke:'#1f2328','stroke-width':1.5});
+    const lr=ra+14;
+    el('text',{x:pA.x+lr*Math.cos(A*D/2),y:pA.y-lr*Math.sin(A*D/2)+5,'font-size':13,'font-family':'Inter','text-anchor':'middle',fill:'#333'},A+'°');
+
+    // landing points
+    hits.forEach(h=>{
+      if(!reached(h.x)) return;
+      const p=P({x:h.x,y:0});
+      if (h.valid){
+        const idx = sol.tris.findIndex(t=>Math.abs(t.c-h.x)<1e-4*Math.max(1,h.x));
+        const col = idx===1?'var(--t2)':'var(--t1)';
+        if (swingPhi===null) el('line',{x1:pC.x,y1:pC.y,x2:p.x,y2:p.y,stroke:col,'stroke-width':3,'stroke-linecap':'round'});
+        el('circle',{cx:p.x,cy:p.y,r:6,fill:col});
+        const lab = sol.tris.length===2 ? (idx===1?'B₂':'B₁') : 'B';
+        el('text',{x:p.x,y:p.y+24,'font-size':17,'font-weight':600,'text-anchor':'middle','font-family':'Inter',fill:col},lab);
+      } else {
+        el('circle',{cx:p.x,cy:p.y,r:6,fill:'#fff',stroke:'var(--bad)','stroke-width':2});
+        el('text',{x:p.x,y:p.y+24,'font-size':12,'text-anchor':'middle','font-family':'Inter',fill:'#7a828d'},'behind A');
+      }
+    });
+
+    // side a labels for drawn triangles
+    if (swingPhi===null) sol.tris.forEach((t,i)=>{
+      const pB=P({x:t.c,y:0});
+      const m={x:(pB.x+pC.x)/2,y:(pB.y+pC.y)/2};
+      const g={x:(pA.x+pB.x+pC.x)/3,y:(pA.y+pB.y+pC.y)/3};
+      const dx=m.x-g.x, dy=m.y-g.y, L=Math.hypot(dx,dy)||1;
+      el('text',{x:m.x+16*dx/L,y:m.y+16*dy/L+5,'font-size':17,'font-family':'Source Serif 4','font-style':'italic','text-anchor':'middle',fill:i?'var(--t2)':'var(--t1)'},'a');
+    });
+
+    // vertices
+    el('circle',{cx:pA.x,cy:pA.y,r:5,fill:'#1f2328'});
+    el('text',{x:pA.x-10,y:pA.y+22,'font-size':17,'font-weight':600,'font-family':'Inter','text-anchor':'middle'},'A');
+    el('circle',{cx:pC.x,cy:pC.y,r:5,fill:'#1f2328'});
+    el('text',{x:pC.x,y:pC.y-12,'font-size':17,'font-weight':600,'font-family':'Inter','text-anchor':'middle'},'C');
+
+    if (swingPhi===null) writeWork(A,a,b,sol);
+  }
+
+  function writeWork(A,a,b,sol){
+    const n = sol.tris.length;
+    const v=$('verdict');
+    v.className='verdict v'+n;
+    v.textContent = n===0 ? 'No triangle' : n===1 ? 'Exactly one triangle' : 'Two triangles';
+
+    const sinA=Math.sin(A*D);
+    let h = `<p class="step">Law of Sines, solved for <i>sin B</i>:</p>
+      <span class="eq"><i>sin B</i> = <i>b</i>·<i>sin A</i> / <i>a</i> = (${f(b,1)})·sin(${A}°) / ${f(a,1)} = <b>${f(sol.s,4)}</b></span>`;
+    let ex='';
+    if (sol.kind==='over'){
+      h += `<p class="step" style="margin-top:8px"><span class="no">✗ ${f(sol.s,4)} &gt; 1</span></p>`;
+      ex = `The sine of an angle can never be bigger than 1, so no angle <i>B</i> works. In the picture you can see why: side <i>a</i> is too short to reach the bottom side, and the dashed circle never touches it.`;
+    } else if (sol.kind==='right'){
+      h += `<p class="step" style="margin-top:8px">Only one angle has sine exactly 1: <span class="eq"><i>B</i> = 90°</span></p>`;
+      if (n) { ex = `Side <i>a</i> just barely reaches the bottom side, straight down. The circle touches the line at exactly one point, so you get one <b>right</b> triangle.`; }
+      else ex = `<i>B</i> = 90° leaves no room, since <i>A</i> + <i>B</i> ≥ 180°.`;
+    } else {
+      const B1=sol.B1, B2=sol.B2;
+      h += `<p class="step" style="margin-top:8px">Two angles between 0° and 180° have this sine:</p>
+        <span class="eq"><i>B</i><sub>1</sub> = sin<sup>−1</sup>(${f(sol.s,4)}) ≈ ${ang(B1)}</span>
+        <span class="eq"><i>B</i><sub>2</sub> = 180° − ${ang(B1)} ≈ ${ang(B2)}</span>
+        <p class="step" style="margin-top:8px">Check that each one leaves room for angle <i>C</i> (need <i>A</i> + <i>B</i> &lt; 180°):</p>
+        <span class="eq">${A}° + ${ang(B1)} = ${ang(A+B1)} ${A+B1<180-EPS?'<span class="ok">✓ room for C</span>':'<span class="no">✗ no room</span>'}</span>
+        <span class="eq">${A}° + ${ang(B2)} = ${ang(A+B2)} ${A+B2<180-EPS?'<span class="ok">✓ room for C</span>':'<span class="no">✗ no room</span>'}</span>`;
+      if (n===2) ex = `Both angles pass the check, so there are two triangles. In the picture, side <i>a</i> can swing to the left <b>or</b> to the right and land on the bottom side both times. Notice that the two triangles share angle <i>A</i>, side <i>b</i>, and side <i>a</i>. Only the third side and the other angles differ.`;
+      else if (n===1){
+        if (A>=90) ex = `Angle <i>A</i> is obtuse, so <i>B</i><sub>2</sub> (also obtuse) can't fit. A triangle can only have one obtuse angle. A triangle exists only if <i>a</i> &gt; <i>b</i>, and here it does.`;
+        else ex = `<i>B</i><sub>2</sub> fails the check. In the picture, <i>a</i> ≥ <i>b</i>, so the circle around <i>C</i> is big enough that its second crossing lands on or behind <i>A</i>, which doesn't make a triangle.`;
+      } else ex = `Neither angle leaves room for <i>C</i>. With <i>A</i> obtuse, side <i>a</i> must be the longest side, but here <i>a</i> ≤ <i>b</i>. The only place it reaches the line is behind <i>A</i>.`;
+    }
+    $('work').innerHTML=h;
+    $('explain').innerHTML=ex;
+
+    if (n){
+      let t=`<table><tr><th></th><th><i>B</i></th><th><i>C</i> = 180° − <i>A</i> − <i>B</i></th><th><i>c</i> = <i>a</i>·sin <i>C</i> / sin <i>A</i></th></tr>`;
+      sol.tris.forEach((tr,i)=>{
+        t+=`<tr><td class="tag${i+1}">${n===2?'Triangle '+(i+1):'Triangle'}</td><td>${ang(tr.B)}</td><td>${ang(tr.C)}</td><td>${f(tr.c,2)}</td></tr>`;
+      });
+      $('tablewrap').innerHTML='<p class="step" style="margin:14px 0 0;font-weight:600;font-size:.95rem">Finish solving:</p>'+t+'</table>';
+    } else $('tablewrap').innerHTML='';
+  }
+
+  function stopSwing(){ if(anim) cancelAnimationFrame(anim); anim=null; swingPhi=null; $('swing').textContent='▶ Swing side a'; }
+  $('swing').onclick=()=>{
+    if (anim){ stopSwing(); render(); return; }
+    const t0=performance.now(), dur=3200;
+    $('swing').textContent='■ Stop';
+    const step=now=>{
+      const u=Math.min(1,(now-t0)/dur);
+      swingPhi = 180 + 180*(u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2);
+      render();
+      if(u<1) anim=requestAnimationFrame(step);
+      else { stopSwing(); render(); }
+    };
+    anim=requestAnimationFrame(step);
+  };
+  [sA,sa,sb].forEach(s=>s.addEventListener('input',()=>{ stopSwing(); render(); }));
+  render();
+})();
+</script>
+</body>
+</html>
