@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATH 137 Lecture Notes · Trigonometry</title>
+<meta name="description" content="Lecture notes for MATH 137 Trigonometry at Ivy Tech Bloomington, to accompany Sullivan, Trigonometry: A Unit Circle Approach, 11th edition.">
+<style>
+  :root { --ink:#1d2433; --muted:#5b6475; --line:#e3e6ec; --bg:#fafbfc; --accent:#006648; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: Georgia, "Times New Roman", serif; color:var(--ink); background:var(--bg); line-height:1.5; }
+  header { background:#006648; color:#fff; padding:3rem 1.25rem 2.5rem; }
+  .wrap { max-width:880px; margin:0 auto; }
+  header .course { font-family: system-ui, sans-serif; letter-spacing:.08em; text-transform:uppercase; font-size:.85rem; opacity:.8; margin:0; }
+  header h1 { font-size:2.4rem; margin:.3rem 0 .6rem; font-weight:normal; }
+  header p { margin:.2rem 0; opacity:.9; }
+  .btns { margin-top:1.5rem; display:flex; gap:.75rem; flex-wrap:wrap; }
+  .btn { font-family: system-ui, sans-serif; display:inline-block; padding:.65rem 1.1rem; border-radius:6px; text-decoration:none; font-weight:600; font-size:.95rem; }
+  .btn.primary { background:#fff; color:#006648; }
+  .btn.ghost { border:1px solid rgba(255,255,255,.6); color:#fff; }
+  main { padding:2rem 1.25rem 3rem; }
+  .guide { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem 1.25rem; margin-bottom:2rem; font-size:.97rem; }
+  .guide h2 { font-size:1.05rem; margin:0 0 .4rem; }
+  .key { display:flex; flex-wrap:wrap; gap:.4rem .9rem; margin:.6rem 0 0; padding:0; list-style:none; font-family:system-ui,sans-serif; font-size:.85rem; }
+  .key li::before { content:""; display:inline-block; width:.8em; height:.8em; border-radius:2px; margin-right:.35em; vertical-align:-.05em; background:var(--c); }
+  .chapter { background:var(--card); border:1px solid var(--line); border-radius:8px; margin-bottom:1.25rem; overflow:hidden; }
+  .chapter h2 { margin:0; font-size:1.25rem; font-weight:normal; border-bottom:1px solid var(--line); }
+  .chapter h2 a { display:block; padding:.9rem 1.25rem; color:var(--ink); text-decoration:none; }
+  .chapter h2 a:hover { background:#eef6f2; }
+  .cl { font-family:system-ui,sans-serif; font-size:.78rem; text-transform:uppercase; letter-spacing:.07em; color:var(--accent); display:block; }
+  ol { list-style:none; margin:0; padding:.35rem 0; }
+  li a { display:flex; gap:.9rem; padding:.42rem 1.25rem; text-decoration:none; color:var(--ink); }
+  li a:hover { background:#eef6f2; }
+  .demo .st { color:var(--accent); font-style:italic; }
+  .demo .sn::before { content:"\25B6"; font-size:.7rem; color:var(--accent); }
+  li a:hover .st { color:var(--accent); text-decoration:underline; }
+  .sn { font-family:system-ui,sans-serif; font-variant-numeric:tabular-nums; color:var(--muted); min-width:2.4rem; font-size:.92rem; padding-top:.08rem; }
+  .st { flex:1; }
+  .pg { font-family:system-ui,sans-serif; color:var(--muted); font-size:.8rem; white-space:nowrap; padding-top:.15rem; }
+  .reviews { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; margin-bottom:2rem; }
+  .review { background:var(--card); border:1px solid var(--line); border-left:4px solid #006648; border-radius:8px; padding:1rem 1.25rem; text-decoration:none; color:var(--ink); display:block; }
+  .review:hover { background:#eef6f2; }
+  .review .cl { margin-bottom:.15rem; }
+  .review strong { font-size:1.15rem; font-weight:normal; display:block; }
+  .review span.d { color:var(--muted); font-size:.92rem; }
+  .sechead { font-family:system-ui,sans-serif; font-size:.85rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 .6rem; font-weight:600; }
+  footer { text-align:center; color:var(--muted); font-size:.85rem; padding:0 1rem 2.5rem; font-family:system-ui,sans-serif; }
+  @media (max-width:560px) { header h1 { font-size:1.8rem; } .pg { display:none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="course"><a href="https://rpennell-math.github.io/" style="color:#fff;text-decoration:none;opacity:.85">&larr; All courses</a></p>
+    <p class="course">MATH 137 · Ivy Tech Community College · Bloomington</p>
+    <h1>Trigonometry Lecture Notes</h1>
+    <p>To accompany Michael Sullivan, <em>Trigonometry: A Unit Circle Approach</em>, 11th edition</p>
+    <p>Prepared by Ryan Pennell</p>
+    <div class="btns">
+      <a class="btn primary" href="MATH137-Lecture-Notes.pdf">Open the full notes (PDF)</a>
+      <a class="btn ghost" href="MATH137-Lecture-Notes.pdf" download>Download PDF</a>
+      <a class="btn ghost" href="#videos">Worked-example videos</a>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <h2 class="sechead">Exam review</h2>
+  <div class="reviews">
+    <a class="review" href="MATH137-Midterm-Review.pdf"><span class="cl">Module 4B</span><strong>Midterm Review</strong><span class="d">Practice problems, one topic per exam problem (PDF)</span></a>
+    <a class="review" href="MATH137-Final-Review.pdf"><span class="cl">Module 8B</span><strong>Final Exam Review</strong><span class="d">Practice problems, one topic per exam problem (PDF)</span></a>
+  </div>
+  <h2 class="sechead">Lecture notes by section</h2>
+  <div class="guide">
+    <h2>How to use these notes</h2>
+    Click any section below to jump straight to it in the PDF. Inside the notes, numbered boxes share one counter per section (so &ldquo;Theorem 2.3.4&rdquo; is the fourth numbered box in Section 2.3), and blue text is a clickable link.
+    <ul class="key">
+      <li style="--c:#2f6fca">Definitions</li>
+      <li style="--c:#c8382f">Theorems</li>
+      <li style="--c:#e08a1e">Lemmas</li>
+      <li style="--c:#1a9a96">Corollaries</li>
+      <li style="--c:#3a9a46">Properties &amp; formulas</li>
+      <li style="--c:#8a8f99">Procedures</li>
+    </ul>
+  </div>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=5"><span class="cl">Chapter 1</span> Graphs and Functions</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=5"><span class="sn">1.1</span><span class="st">The Distance and Midpoint Formulas</span><span class="pg">p.&nbsp;5</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=7"><span class="sn">1.2</span><span class="st">Graphs of Equations in Two Variables; Circles</span><span class="pg">p.&nbsp;7</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=11"><span class="sn">1.3</span><span class="st">Functions and Their Graphs</span><span class="pg">p.&nbsp;11</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=14"><span class="sn">1.4</span><span class="st">Properties of Functions</span><span class="pg">p.&nbsp;14</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=18"><span class="sn">1.5</span><span class="st">Library of Functions; Piecewise-defined Functions</span><span class="pg">p.&nbsp;18</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=20"><span class="sn">1.6</span><span class="st">Graphing Techniques: Transformations</span><span class="pg">p.&nbsp;20</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=22"><span class="sn">1.7</span><span class="st">One-to-One Functions; Inverse Functions</span><span class="pg">p.&nbsp;22</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=26"><span class="cl">Chapter 2</span> Trigonometric Functions</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=26"><span class="sn">2.1</span><span class="st">Angles, Arc Length, and Circular Motion</span><span class="pg">p.&nbsp;26</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=29"><span class="sn">2.2</span><span class="st">Trigonometric Functions: Unit Circle Approach</span><span class="pg">p.&nbsp;29</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=33"><span class="sn">2.3</span><span class="st">Properties of the Trigonometric Functions</span><span class="pg">p.&nbsp;33</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=36"><span class="sn">2.4</span><span class="st">Graphs of the Sine and Cosine Functions</span><span class="pg">p.&nbsp;36</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=39"><span class="sn">2.5</span><span class="st">Graphs of the Tangent, Cotangent, Cosecant, and Secant Functions</span><span class="pg">p.&nbsp;39</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=42"><span class="sn">2.6</span><span class="st">Phase Shift; Sinusoidal Curve Fitting</span><span class="pg">p.&nbsp;42</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=44"><span class="cl">Chapter 3</span> Analytic Trigonometry</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=44"><span class="sn">3.1</span><span class="st">The Inverse Sine, Cosine, and Tangent Functions</span><span class="pg">p.&nbsp;44</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=46"><span class="sn">3.2</span><span class="st">The Inverse Trigonometric Functions (Continued)</span><span class="pg">p.&nbsp;46</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=48"><span class="sn">3.3</span><span class="st">Trigonometric Equations</span><span class="pg">p.&nbsp;48</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=50"><span class="sn">3.4</span><span class="st">Trigonometric Identities</span><span class="pg">p.&nbsp;50</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=51"><span class="sn">3.5</span><span class="st">Sum and Difference Formulas</span><span class="pg">p.&nbsp;51</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=54"><span class="sn">3.6</span><span class="st">Double-angle and Half-angle Formulas</span><span class="pg">p.&nbsp;54</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=56"><span class="sn">3.7</span><span class="st">Product-to-Sum and Sum-to-Product Formulas</span><span class="pg">p.&nbsp;56</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=58"><span class="cl">Chapter 4</span> Applications of Trigonometric Functions</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=58"><span class="sn">4.1</span><span class="st">Right Triangle Trigonometry; Applications</span><span class="pg">p.&nbsp;58</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=60"><span class="sn">4.2</span><span class="st">The Law of Sines</span><span class="pg">p.&nbsp;60</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=61"><span class="sn">4.3</span><span class="st">The Law of Cosines</span><span class="pg">p.&nbsp;61</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=63"><span class="sn">4.4</span><span class="st">Area of a Triangle</span><span class="pg">p.&nbsp;63</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=64"><span class="sn">4.5</span><span class="st">Simple Harmonic Motion; Damped Motion; Combining Waves</span><span class="pg">p.&nbsp;64</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=67"><span class="cl">Chapter 5</span> Polar Coordinates; Vectors</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=67"><span class="sn">5.1</span><span class="st">Polar Coordinates</span><span class="pg">p.&nbsp;67</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=68"><span class="sn">5.2</span><span class="st">Polar Equations and Graphs</span><span class="pg">p.&nbsp;68</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=70"><span class="sn">5.3</span><span class="st">The Complex Plane; De Moivre&#x27;s Theorem</span><span class="pg">p.&nbsp;70</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=73"><span class="sn">5.4</span><span class="st">Vectors</span><span class="pg">p.&nbsp;73</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=76"><span class="sn">5.5</span><span class="st">The Dot Product</span><span class="pg">p.&nbsp;76</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=79"><span class="sn">5.6</span><span class="st">Vectors in Space</span><span class="pg">p.&nbsp;79</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=81"><span class="sn">5.7</span><span class="st">The Cross Product</span><span class="pg">p.&nbsp;81</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=84"><span class="cl">Chapter 6</span> Analytic Geometry</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=84"><span class="sn">6.1</span><span class="st">Conics</span><span class="pg">p.&nbsp;84</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=84"><span class="sn">6.2</span><span class="st">The Parabola</span><span class="pg">p.&nbsp;84</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=86"><span class="sn">6.3</span><span class="st">The Ellipse</span><span class="pg">p.&nbsp;86</span></a></li>
+          <li class="demo"><a href="https://rpennell-math.github.io/demos/ellipse-stretch.html"><span class="sn"></span><span class="st">Interactive demo: Which way does the ellipse stretch?</span><span class="pg">demo</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=88"><span class="sn">6.4</span><span class="st">The Hyperbola</span><span class="pg">p.&nbsp;88</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=90"><span class="sn">6.5</span><span class="st">Rotation of Axes; General Form of a Conic</span><span class="pg">p.&nbsp;90</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=93"><span class="sn">6.6</span><span class="st">Polar Equations of Conics</span><span class="pg">p.&nbsp;93</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=94"><span class="sn">6.7</span><span class="st">Plane Curves and Parametric Equations</span><span class="pg">p.&nbsp;94</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=97"><span class="cl">Chapter 7</span> Exponential and Logarithmic Functions</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=97"><span class="sn">7.1</span><span class="st">Exponential Functions</span><span class="pg">p.&nbsp;97</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=99"><span class="sn">7.2</span><span class="st">Logarithmic Functions</span><span class="pg">p.&nbsp;99</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=102"><span class="sn">7.3</span><span class="st">Properties of Logarithms</span><span class="pg">p.&nbsp;102</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=104"><span class="sn">7.4</span><span class="st">Logarithmic and Exponential Equations</span><span class="pg">p.&nbsp;104</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=105"><span class="sn">7.5</span><span class="st">Financial Models</span><span class="pg">p.&nbsp;105</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=107"><span class="sn">7.6</span><span class="st">Exponential Growth and Decay Models; Newton&#x27;s Law; Logistic Growth and Decay Models</span><span class="pg">p.&nbsp;107</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=110"><span class="sn">7.7</span><span class="st">Building Exponential, Logarithmic, and Logistic Models from Data</span><span class="pg">p.&nbsp;110</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><a href="MATH137-Lecture-Notes.pdf#page=112"><span class="cl">Appendix A</span> Review</a></h2>
+        <ol>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=112"><span class="sn">A.1</span><span class="st">Algebra Essentials</span><span class="pg">p.&nbsp;112</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=115"><span class="sn">A.2</span><span class="st">Geometry Essentials</span><span class="pg">p.&nbsp;115</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=117"><span class="sn">A.3</span><span class="st">Factoring Polynomials; Completing the Square</span><span class="pg">p.&nbsp;117</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=118"><span class="sn">A.4</span><span class="st">Solving Equations</span><span class="pg">p.&nbsp;118</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=120"><span class="sn">A.5</span><span class="st">Complex Numbers; Quadratic Equations in the Complex Number System</span><span class="pg">p.&nbsp;120</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=123"><span class="sn">A.6</span><span class="st">Interval Notation; Solving Inequalities</span><span class="pg">p.&nbsp;123</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=124"><span class="sn">A.7</span><span class="st">nth Roots; Rational Exponents</span><span class="pg">p.&nbsp;124</span></a></li>
+          <li><a href="MATH137-Lecture-Notes.pdf#page=126"><span class="sn">A.8</span><span class="st">Lines</span><span class="pg">p.&nbsp;126</span></a></li>
+        </ol>
+      </section>
+  <div style="height:1.5rem"></div>
+  <h2 class="sechead" id="videos">Worked-example videos</h2>
+  <div class="guide">
+    <h2>Watch it worked out</h2>
+    Videos working through MATH 137 problems, grouped by topic. <a href="https://www.youtube.com/playlist?list=PL_9WhvM_XtmOHS6v-JEamGO12kq6Wkonc" target="_blank" rel="noopener" style="color:var(--accent)">Full Trig playlist</a>
+  </div>
+      <section class="chapter">
+        <h2><span style="display:block;padding:.9rem 1.25rem">Unit circle and graphs</span></h2>
+        <ol>
+          <li><a href="https://www.youtube.com/watch?v=fbPg6RDO5uo" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Unit circle: where are π/6 and π/3?</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=9I0U3w111EE" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Even or odd functions</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=9oEFJG2TM5c" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Graphing trig functions on a TI-83</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=A1Up-ZV_6xk" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Why does the cosine wave look like that? (long session)</span><span class="pg">YouTube</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><span style="display:block;padding:.9rem 1.25rem">Right triangles and applications</span></h2>
+        <ol>
+          <li><a href="https://www.youtube.com/watch?v=tZQlcUko-Kw" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Find the height of the building across the street</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=gLMDcGfLHcc" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Angle of elevation to the top of a pyramid</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=U9aCTgu51DA" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Aircraft bearing N29°E</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=Gk3M2J66DlQ" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Sun&#x27;s rays and the size of a planet</span><span class="pg">YouTube</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><span style="display:block;padding:.9rem 1.25rem">Inverse trig functions and equations</span></h2>
+        <ol>
+          <li><a href="https://www.youtube.com/watch?v=NsQvunSyAig" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">What they won&#x27;t tell you about inverse trig functions</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=UK2hmHAUqPE" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Exact value of arcsec(−√2)</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=vltyIVz0F-8" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Write a trig expression as an algebraic expression in u</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=fEb27ywZ65s" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Solve tan θ − √3 = 0</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=TKsrt8TFIBk" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Solve sin(3θ) = 1</span><span class="pg">YouTube</span></a></li>
+        </ol>
+      </section>
+      <section class="chapter">
+        <h2><span style="display:block;padding:.9rem 1.25rem">Sum and difference formulas</span></h2>
+        <ol>
+          <li><a href="https://www.youtube.com/watch?v=I1wyCcH7-38" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Cosine addition formula: proof and examples</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=QxTvxrXNJCY" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Cosine sum formula examples: cos(π/4 + π/4) and cos(π/6 + π/3)</span><span class="pg">YouTube</span></a></li>
+          <li><a href="https://www.youtube.com/watch?v=gBliUrsWY4g" target="_blank" rel="noopener"><span class="sn">&#9654;</span><span class="st">Use the sum formula to find sin 105°</span><span class="pg">YouTube</span></a></li>
+        </ol>
+      </section>
+</main>
+<footer>MATH 137 Lecture Notes · Prepared by Ryan Pennell, Ivy Tech Bloomington</footer>
+</body>
+</html>
