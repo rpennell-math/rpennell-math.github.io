@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="feed.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Ryan Pennell · Tangents &amp; Demos</title>
+  <link>https://rpennell-math.github.io/</link>
+  <atom:link href="https://rpennell-math.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+  <description>New articles and interactive demos from Ryan Pennell, Ivy Tech Bloomington.</description>
+  <language>en-us</language>
+  <lastBuildDate>Thu, 19 Nov 2026 13:15:52 +0000</lastBuildDate>
+  <item>
+    <title>Which Way Does the Ellipse Stretch?</title>
+    <link>https://rpennell-math.github.io/demos/ellipse-stretch.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/demos/ellipse-stretch.html</guid>
+    <pubDate>Thu, 19 Nov 2026 13:15:52 +0000</pubDate>
+    <category>Interactive Demos</category>
+    <description>The bigger denominator wins. Drag the denominators under x² and y² and watch the ellipse stretch horizontally, vertically, or become a circle, with the half-axes, a, b, c, and the foci marked.</description>
+  </item>
+  <item>
+    <title>The Ambiguous Case (SSA): Why 0, 1, or 2 Triangles?</title>
+    <link>https://rpennell-math.github.io/demos/ambiguous-case.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/demos/ambiguous-case.html</guid>
+    <pubDate>Wed, 18 Nov 2026 13:36:24 +0000</pubDate>
+    <category>Interactive Demos</category>
+    <description>Given angle A, side a, and side b, swing side a around vertex C and count where it lands. The Law of Sines work updates as you drag, showing when sin B is too big, when there's exactly one right triangle, and when both B and 180° − B fit.</description>
+  </item>
+  <item>
+    <title>Cleo’s Integrals</title>
+    <link>https://rpennell-math.github.io/tangents/cleo-integrals.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/tangents/cleo-integrals.html</guid>
+    <pubDate>Wed, 18 Nov 2026 13:18:38 +0000</pubDate>
+    <category>Tangents</category>
+    <description>An anonymous Math Stack Exchange user posted 39 correct closed forms with no work shown. The math behind the golden-ratio and Airy integrals, and how experimental mathematics finds answers before proofs.</description>
+  </item>
+  <item>
+    <title>The Squeeze Theorem, ε–δ Style</title>
+    <link>https://rpennell-math.github.io/demos/squeeze-theorem.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/demos/squeeze-theorem.html</guid>
+    <pubDate>Wed, 18 Nov 2026 01:17:52 +0000</pubDate>
+    <category>Interactive Demos</category>
+    <description>The proof as a picture: find δ for the lower bound, δ for the upper bound, take the smaller one, and the trapped function has nowhere to go. Examples include x² sin(1/x) and sin x/x, plus one where the bounds disagree and the theorem says nothing.</description>
+  </item>
+  <item>
+    <title>The ε–δ Definition of a Limit</title>
+    <link>https://rpennell-math.github.io/demos/epsilon-delta.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/demos/epsilon-delta.html</guid>
+    <pubDate>Wed, 18 Nov 2026 00:42:10 +0000</pubDate>
+    <category>Interactive Demos</category>
+    <description>Play the limit game: your opponent picks ε, you answer with δ. Drag on the graph to watch where the function stays in the band and where it escapes, for limits that work (x², sin x/x, x sin(1/x)) and ones that fail (a jump, sin(1/x)), or type in your own function.</description>
+  </item>
+  <item>
+    <title>Is π^π^π^π an Integer?</title>
+    <link>https://rpennell-math.github.io/tangents/pi-tower.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/tangents/pi-tower.html</guid>
+    <pubDate>Wed, 18 Nov 2026 00:32:26 +0000</pubDate>
+    <category>Tangents</category>
+    <description>Nobody knows. Checking numerically would take about 6.66 × 10^17 digits of π, over 2,000 times the current record, and the classical transcendence theorems don't apply. What can be proved: no two consecutive terms of the tower are rational, and Schanuel's conjecture would settle it.</description>
+  </item>
+  <item>
+    <title>Radix Economy and the Number e</title>
+    <link>https://rpennell-math.github.io/tangents/radix-economy.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/tangents/radix-economy.html</guid>
+    <pubDate>Wed, 18 Nov 2026 00:11:09 +0000</pubDate>
+    <category>Tangents</category>
+    <description>If a digit with b states costs b, which base is cheapest? The continuous answer is e, the best integer base is 3 (it comes down to 8 &lt; 9), no mix of integer radices beats pure ternary, and base e itself can't write 10 in finitely many digits.</description>
+  </item>
+  <item>
+    <title>Subtraction Without Borrowing: The Method of Complements in Any Base</title>
+    <link>https://rpennell-math.github.io/tangents/complement-theorem.html</link>
+    <guid isPermaLink="true">https://rpennell-math.github.io/tangents/complement-theorem.html</guid>
+    <pubDate>Tue, 17 Nov 2026 23:58:22 +0000</pubDate>
+    <category>Tangents</category>
+    <description>Turn subtraction into addition in any base: complement the digits, add one, add, and drop the leading carry. A short proof, what a missing carry means, the modular view, and a mixed-radix version that covers clock times, feet and inches, pounds and ounces, and mixed numbers.</description>
+  </item>
+</channel>
+</rss>
